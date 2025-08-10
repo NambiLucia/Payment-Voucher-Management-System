@@ -13,3 +13,78 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id          String   @id @default(uuid())
+  username    String
+  email       String   @unique
+  is_approved Boolean
+  role        Role
+  createdAt   DateTime @default(now())
+
+  Voucher   Voucher[]
+  Code_type Code_type[]
+}
+
+model Voucher {
+  id              String   @id @default(uuid())
+  date            DateTime @default(now())
+  voucherNo       Int      @unique
+  payee           String
+  voucherDetails  String
+  accountCode     Type
+  beneficiaryCode Type
+  budgetCode      Type
+  exchangeRate    Int
+  amountFigures   Int
+  amountWords     String
+  user_id         User     @relation(fields: [userId], references: [id])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  status          Status @default(DRAFT)
+
+  userId   String
+  Document Document[]
+}
+
+model Document {
+  id         String   @id @default(uuid())
+  filepath   String // File path to the document
+  filename   String
+  filetype   String
+  voucher_id Voucher  @relation(fields: [voucherId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  voucherId  String
+}
+
+model Code_type {
+  id          String @id @default(uuid())
+  code        String
+  description String
+  type        Type
+  user_id     User   @relation(fields: [userId], references: [id])
+  userId      String
+}
+
+enum Role {
+  INITIATOR
+  REVIEWER
+  APPROVER
+  ADMIN
+}
+
+enum Status {
+  DRAFT
+  INITIATED
+  PENDING
+  IN_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum Type {
+  ACCOUNT_CODE
+  BENEFICIARY_CODE
+  BUDGET_CODE
+}
