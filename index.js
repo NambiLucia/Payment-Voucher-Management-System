@@ -5,9 +5,11 @@ import path from 'path'
 import { fileURLToPath } from 'url';
 import cors from 'cors'
 
+import userRoute from './routes/userroute.js';
 
 
-//routes
+
+
 
 
 
@@ -27,6 +29,10 @@ app.use(morgan('combined', { stream: accessLogStream }))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors())
+
+
+//middleware for endpoints
+app.use('/api/v2/users',userRoute)
 
 
 
