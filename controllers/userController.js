@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-// Get Users
+//Get Users
 export const getUsers = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
