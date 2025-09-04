@@ -97,3 +97,46 @@ export const login = async (req, res) => {
     return res.status(500).json({ error: "Login failed" });
   }
 };
+
+//Update User
+export const updateUserById =async(req,res) =>{
+ try {
+        if (!req.params.id) {
+            return res.status(400).json({ error: "User ID is required" });
+          }
+
+      const updatedUser = await prisma.user.update({
+        where: {
+          id: req.params.id,
+        },
+        data: req.body,
+      });
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found"});
+      }
+      return res.status(200).json({message:`User updated`,updatedUser});
+    } catch (error) {
+      return res
+        .status(500)
+        .json({ error: error.message });
+    }
+}
+
+export const deleteUserById =async(req,res) =>{
+    try{
+        const deletedUser= await prisma.user.delete({
+            where:{
+                id:req.params.id
+            }
+        }) 
+        if(deletedUser){
+            return res.status(200).json({message:'User deleted', deletedUser});
+        } else {
+        return res.status(404).json({error:`Sorry user does not exist`})}
+    }
+    catch(error){
+        return res.status(404)
+        .json({error:error.message})
+    }
+
+  }
