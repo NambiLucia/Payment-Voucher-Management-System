@@ -122,21 +122,34 @@ export const updateUserById =async(req,res) =>{
     }
 }
 
-export const deleteUserById =async(req,res) =>{
-    try{
-        const deletedUser= await prisma.user.delete({
-            where:{
-                id:req.params.id
-            }
-        }) 
-        if(deletedUser){
-            return res.status(200).json({message:'User deleted', deletedUser});
-        } else {
-        return res.status(404).json({error:`Sorry user does not exist`})}
-    }
-    catch(error){
-        return res.status(404)
-        .json({error:error.message})
+export const deleteUserById = async (req, res) => {
+  try {
+    const { isHardDelete } = req.query; // e.g. /users/1?isHardDelete=true
+    const userId = req.params.id;
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
     }
 
+    if (isHardDelete === "true") {
+      // Permanent delete (admin only!)
+      await prisma.user.delete({ where: { id: userId } });
+      return res.status(200).json({ message: "User permanently deleted" });
+    } else {
+      // Soft delete
+      const deletedUser = await prisma.user.update({
+        where: { id: userId },
+        data: { deletedAt: new Date() }
+      });
+      return res.status(200).json({
+        message: "User soft deleted successfully",
+        deletedUser
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
+};
+
+

@@ -22,6 +22,7 @@ model User {
   is_approved Boolean  @default(false)
   role        Role?
   createdAt   DateTime @default(now())
+  deletedAt DateTime? 
 
   Voucher   Voucher[]
   Code_type Code_type[]
