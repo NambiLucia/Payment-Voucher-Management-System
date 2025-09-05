@@ -12,6 +12,7 @@ export const getUsers = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const users = await prisma.user.findMany({
+      where: { deletedAt: null },
       skip,
       take: limit,
       orderBy: {
