@@ -1,5 +1,4 @@
-
-prisma.$use(async (params, next) => {
+export const softDeleteFilter = async (params, next) => {
   if (params.model === "User" && params.action === "findMany") {
     params.args ||= {};
     params.args.where ||= {};
@@ -13,4 +12,4 @@ prisma.$use(async (params, next) => {
   }
 
   return next(params);
-});
+};
