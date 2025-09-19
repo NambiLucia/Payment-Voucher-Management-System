@@ -12,3 +12,8 @@
 ::ffff:127.0.0.1 - - [23/Aug/2025:15:15:48 +0000] "POST /api/v2/users/login HTTP/1.1" 200 287 "-" "Thunder Client (https://www.thunderclient.com)"
 ::ffff:127.0.0.1 - - [04/Sep/2025:17:16:09 +0000] "GET /api/v2/users/ HTTP/1.1" 200 253 "-" "Thunder Client (https://www.thunderclient.com)"
 ::ffff:127.0.0.1 - - [04/Sep/2025:17:17:41 +0000] "PATCH /api/v2/users/updateUser/8f568d5d-6661-4693-9479-8e01ce1d081f HTTP/1.1" 200 282 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [19/Sep/2025:13:37:47 +0000] "GET /api/v2/users/ HTTP/1.1" 200 274 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [19/Sep/2025:13:40:58 +0000] "POST /api/v2/users/register HTTP/1.1" 201 307 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [19/Sep/2025:13:41:41 +0000] "POST /api/v2/users/register HTTP/1.1" 400 1239 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [19/Sep/2025:13:42:04 +0000] "POST /api/v2/users/register HTTP/1.1" 400 1223 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [19/Sep/2025:13:42:11 +0000] "POST /api/v2/users/register HTTP/1.1" 201 309 "-" "Thunder Client (https://www.thunderclient.com)"

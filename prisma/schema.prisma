@@ -20,7 +20,7 @@ model User {
   email       String   @unique
   password String
   is_approved Boolean  @default(false)
-  role        Role?
+  role        Role?    
   createdAt   DateTime @default(now())
   deletedAt DateTime? 
 
@@ -74,6 +74,7 @@ enum Role {
   REVIEWER
   APPROVER
   ADMIN
+   USER 
 }
 
 enum Status {
