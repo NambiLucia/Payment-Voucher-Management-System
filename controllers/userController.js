@@ -123,31 +123,49 @@ export const updateUserById =async(req,res) =>{
     }
 }
 
+//Delete User
 export const deleteUserById = async (req, res) => {
   try {
-    const { isHardDelete } = req.query; // e.g. /users/1?isHardDelete=true
+    const isHardDelete = req.query.isHardDelete; // e.g. /users/uuid?isHardDelete=true
     const userId = req.params.id;
 
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+    // Check if user is logged in
+    if (!req.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    // If hard delete, require admin role
+    if (isHardDelete === "true" && req.user.role !== "admin") {
+      return res.status(403).json({ error: "Forbidden: Admins only" });
+    }
+
+    // Find user (middleware excludes already soft-deleted ones)
+    const user = await prisma.user.findUnique({ 
+      where: { id: userId } 
+    });
+
     if (!user) {
-      return res.status(404).json({ error: "User not found" });
+      return res
+        .status(404)
+        .json({ error: "User not found or already deleted" });
     }
 
     if (isHardDelete === "true") {
-      // Permanent delete (admin only!)
       await prisma.user.delete({ where: { id: userId } });
       return res.status(200).json({ message: "User permanently deleted" });
-    } else {
-      // Soft delete
-      const deletedUser = await prisma.user.update({
-        where: { id: userId },
-        data: { deletedAt: new Date() }
-      });
-      return res.status(200).json({
-        message: "User soft deleted successfully",
-        deletedUser
-      });
     }
+
+    // Soft delete
+    const deletedUser = await prisma.user.update({
+      where: { id: userId },
+      data: { deletedAt: new Date() },
+      select: { id: true, email: true, deletedAt: true } 
+    });
+
+    return res.status(200).json({
+      message: "User soft deleted successfully",
+      deletedUser,
+    });
   } catch (error) {
     return res.status(500).json({ error: error.message });
   }

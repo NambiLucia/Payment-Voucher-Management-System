@@ -1,0 +1,16 @@
+
+prisma.$use(async (params, next) => {
+  if (params.model === "User" && params.action === "findMany") {
+    params.args ||= {};
+    params.args.where ||= {};
+    params.args.where.deletedAt = null;
+  }
+
+  if (params.model === "User" && params.action === "findUnique") {
+    params.args ||= {};
+    params.args.where ||= {};
+    params.args.where.deletedAt = null;
+  }
+
+  return next(params);
+});
