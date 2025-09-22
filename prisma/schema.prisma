@@ -1,12 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  
 }
 
 datasource db {
@@ -15,23 +8,22 @@ datasource db {
 }
 
 model User {
-  id          String   @id @default(uuid())
+  id          String      @id @default(uuid())
   username    String
-  email       String   @unique
-  password String
-  is_approved Boolean  @default(false)
-  role        Role?    
-  createdAt   DateTime @default(now())
-  deletedAt DateTime? 
-
-  Voucher   Voucher[]
-  Code_type Code_type[]
+  email       String      @unique
+  is_approved Boolean     @default(false)
+  role        Role? @default(USER) 
+  createdAt   DateTime    @default(now())
+  password    String
+  deletedAt   DateTime?
+  Code_type   Code_type[]
+  Voucher     Voucher[]
 }
 
 model Voucher {
-  id              String   @id @default(uuid())
-  date            DateTime @default(now())
-  voucherNo       Int      @unique
+  id              String     @id @default(uuid())
+  date            DateTime   @default(now())
+  voucherNo       Int        @unique
   payee           String
   voucherDetails  String
   accountCode     Type
@@ -40,24 +32,23 @@ model Voucher {
   exchangeRate    Int
   amountFigures   Int
   amountWords     String
-  user_id         User     @relation(fields: [userId], references: [id])
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  status          Status @default(DRAFT)
-
-  userId   String
-  Document Document[]
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  status          Status     @default(DRAFT)
+  userId          String
+  Document        Document[]
+  user_id         User       @relation(fields: [userId], references: [id])
 }
 
 model Document {
   id         String   @id @default(uuid())
-  filepath   String // File path to the document
+  filepath   String
   filename   String
   filetype   String
-  voucher_id Voucher  @relation(fields: [voucherId], references: [id])
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   voucherId  String
+  voucher_id Voucher  @relation(fields: [voucherId], references: [id])
 }
 
 model Code_type {
@@ -65,8 +56,8 @@ model Code_type {
   code        String
   description String
   type        Type
-  user_id     User   @relation(fields: [userId], references: [id])
   userId      String
+  user_id     User   @relation(fields: [userId], references: [id])
 }
 
 enum Role {
@@ -74,6 +65,7 @@ enum Role {
   REVIEWER
   APPROVER
   ADMIN
+  USER
 }
 
 enum Status {
