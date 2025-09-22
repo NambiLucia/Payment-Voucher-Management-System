@@ -74,7 +74,6 @@ enum Role {
   REVIEWER
   APPROVER
   ADMIN
-   USER 
 }
 
 enum Status {
