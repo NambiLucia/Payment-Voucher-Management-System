@@ -1,15 +1,5 @@
-export const softDeleteFilter = async (params, next) => {
-  if (params.model === "User" && params.action === "findMany") {
-    params.args ||= {};
-    params.args.where ||= {};
-    params.args.where.deletedAt = null;
-  }
-
-  if (params.model === "User" && params.action === "findUnique") {
-    params.args ||= {};
-    params.args.where ||= {};
-    params.args.where.deletedAt = null;
-  }
-
-  return next(params);
+export const softDeleteFilter = (req, res, next) => {
+  // Default filter: exclude soft-deleted users
+  req.userFilter = { deletedAt: null };
+  next();
 };

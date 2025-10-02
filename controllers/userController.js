@@ -1,4 +1,4 @@
-import pkg from "@prisma/client";
+import pkg, { Role } from "@prisma/client";
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 import jwt from "jsonwebtoken";
@@ -12,11 +12,11 @@ export const getUsers = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const users = await prisma.user.findMany({
-      where: { deletedAt: null },
+      where: req.userFilter,
       skip,
       take: limit,
       orderBy: {
-        id: "desc",
+        createdAt: "desc",
       },
     });
 
@@ -44,7 +44,6 @@ export const register = async (req, res) => {
         username,
         email,
         password: hashedPassword,
-        role
       },
     });
 
@@ -145,10 +144,13 @@ export const deleteUserById = async (req, res) => {
       where: { id: userId } 
     });
 
-    if (!user) {
-      return res
-        .status(404)
-        .json({ error: "User not found or already deleted" });
+   if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if already soft deleted
+    if (user.deletedAt && isHardDelete !== "true") {
+      return res.status(400).json({ message: "User already soft deleted" });
     }
 
     if (isHardDelete === "true") {

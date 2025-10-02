@@ -13,6 +13,7 @@ import userRoute from './routes/userroute.js';
 
 
 
+
 const app =express();
 
 // Recreate __filename and __dirname
@@ -29,6 +30,7 @@ app.use(morgan('combined', { stream: accessLogStream }))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors())
+
 
 
 //middleware for endpoints
