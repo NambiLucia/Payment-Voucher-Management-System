@@ -139,7 +139,7 @@ export const deleteUserById = async (req, res) => {
       return res.status(403).json({ error: "Forbidden: Admins only" });
     }
 
-    // Find user (middleware excludes already soft-deleted ones)
+    
     const user = await prisma.user.findUnique({ 
       where: { id: userId } 
     });
