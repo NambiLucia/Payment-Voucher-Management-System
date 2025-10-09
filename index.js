@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import cors from 'cors'
 
 import userRoute from './routes/userroute.js';
+import voucherRoute from './routes/voucherroute.js';
 
 
 
@@ -35,6 +36,7 @@ app.use(cors())
 
 //middleware for endpoints
 app.use('/api/v2/users',userRoute)
+app.use('/api/v2/vouchers',voucherRoute)
 
 
 
