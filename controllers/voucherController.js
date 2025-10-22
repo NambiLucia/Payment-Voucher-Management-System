@@ -49,7 +49,7 @@ export const getVouchersByUserId = async (req, res) => {
     const vouchers = await prisma.voucher.findMany({
       where: {
         ...req.userFilter, 
-        userId: req.params.id, // and filter by user ID
+        voucherId: req.params.id, // and filter by voucher ID
       },
       skip,
       take: limit,
@@ -70,3 +70,34 @@ export const getVouchersByUserId = async (req, res) => {
   }
 };
 
+//Get voucher by voucher ID
+export const getVoucherByVoucherId = async(req,res)=>{
+  try{
+      
+        const voucher= await prisma.voucher.findUnique({
+            where:{
+           id:req.params.id
+            }
+          
+        })
+
+         if (!voucher) {
+      return res.status(404).json({ message: "Voucher not found" });
+    }
+
+
+        res.status(200)
+            .json({
+            voucher:voucher,
+            requestedAt: new Date().toISOString(),
+            
+        })
+
+    }
+    catch(error){
+        return res.status(500).json({
+           error: error.message
+        })
+
+    }
+}
