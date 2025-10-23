@@ -101,3 +101,32 @@ export const getVoucherByVoucherId = async(req,res)=>{
 
     }
 }
+
+//Get filtered vouchers
+
+export const getFilteredVouchers = async(req,res)=>{
+    try{
+      const filter=req.query
+      const vouchers=await prisma.voucher.findMany({
+        where: filter,
+        orderBy:{
+            createdAt:'desc'
+        }
+         })
+         
+        res.status(200).json({
+          results:vouchers
+
+        })
+     
+
+    }
+    catch(error){
+      res.status(500).json({error:error.message})
+    }
+
+
+
+
+
+}
