@@ -90,3 +90,8 @@
 ::ffff:127.0.0.1 - - [09/Oct/2025:15:21:37 +0000] "GET /api/v2/vouchers/user-vouchers/7c81664f-7f6b-4671-ae46-853e4d3ee25a HTTP/1.1" 200 68 "-" "Thunder Client (https://www.thunderclient.com)"
 ::ffff:127.0.0.1 - - [09/Oct/2025:15:21:54 +0000] "GET /api/v2/vouchers/ HTTP/1.1" 200 68 "-" "Thunder Client (https://www.thunderclient.com)"
 ::ffff:127.0.0.1 - - [09/Oct/2025:15:21:55 +0000] "GET /api/v2/vouchers/ HTTP/1.1" 200 68 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [08/Nov/2025:17:40:24 +0000] "GET /api/v2/'/search-status/pending HTTP/1.1" 404 173 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [08/Nov/2025:17:41:24 +0000] "GET /api/v2/vouchers/search-status/pending HTTP/1.1" 404 176 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [08/Nov/2025:17:47:57 +0000] "GET /api/v2/vouchers/search-status/PENDING HTTP/1.1" 404 176 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [08/Nov/2025:17:48:25 +0000] "GET /api/v2/vouchers/search-status/PENDING HTTP/1.1" 200 14 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [08/Nov/2025:17:48:41 +0000] "GET /api/v2/vouchers/search-status/pending HTTP/1.1" 200 14 "-" "Thunder Client (https://www.thunderclient.com)"
