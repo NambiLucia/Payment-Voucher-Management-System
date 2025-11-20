@@ -134,26 +134,3 @@ export const getFilteredVouchers = async(req,res)=>{
 
 // create voucher
 
-export const createVoucher = async(req,res)={
-  try{
-const userId=req.user.id;
- const {
-   date,
-        voucherNo,
-        payee,         
-        paymentDetails, 
-        accountCode,
-        beneficiaryCode,
-        budgetCode, 
-        exchangeRate, 
-        amountFigures, 
-        amountWords, 
-      
-
- }=req.body
-
-  }
-  catch{}
- 
-
-}

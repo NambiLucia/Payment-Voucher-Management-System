@@ -8,36 +8,38 @@ datasource db {
 }
 
 model User {
-  id          String      @id @default(uuid())
+  id          String    @id @default(uuid())
   username    String
-  email       String      @unique
-  is_approved Boolean     @default(false)
-  role        Role? @default(USER) 
-  createdAt   DateTime    @default(now())
+  email       String    @unique
+  is_approved Boolean   @default(false)
+  role        Role    @default(INITIATOR)
+  createdAt   DateTime  @default(now())
   password    String
   deletedAt   DateTime?
-  Code_type   Code_type[]
   Voucher     Voucher[]
 }
 
 model Voucher {
-  id              String     @id @default(uuid())
-  date            DateTime   @default(now())
-  voucherNo       Int        @unique
+  id              String      @id @default(uuid())
+  date            DateTime    @default(now())
+  voucherNo       Int         @unique
   payee           String
   voucherDetails  String
-  accountCode     Type
-  beneficiaryCode Type
-  budgetCode      Type
-  exchangeRate    Int
-  amountFigures   Int
-  amountWords     String
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-  status          Status     @default(DRAFT)
-  userId          String
-  Document        Document[]
-  user_id         User       @relation(fields: [userId], references: [id])
+  accountCode     Account     @relation(fields: [accountId], references: [id])
+  budgetCode      Budget      @relation(fields: [budgetId], references: [id])
+  beneficiaryCode Beneficiary @relation(fields: [beneficiaryId], references: [id])
+  exchangeRate  Int
+  amountFigures Int
+  amountWords   String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  status        Status     @default(DRAFT)
+  userId        String
+  Document      Document[]
+  user_id       User       @relation(fields: [userId], references: [id])
+  accountId     String
+  budgetId      String
+  beneficiaryId String
 }
 
 model Document {
@@ -51,13 +53,31 @@ model Document {
   voucher_id Voucher  @relation(fields: [voucherId], references: [id])
 }
 
-model Code_type {
-  id          String @id @default(uuid())
-  code        String
-  description String
-  type        Type
-  userId      String
-  user_id     User   @relation(fields: [userId], references: [id])
+model Account {
+  id        String    @id @default(uuid())
+  name      String
+  code      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  vouchers  Voucher[]
+}
+
+model Budget {
+  id        String    @id @default(uuid())
+  name      String
+  code      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  vouchers  Voucher[]
+}
+
+model Beneficiary {
+  id        String    @id @default(uuid())
+  name      String
+  code      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  vouchers  Voucher[]
 }
 
 enum Role {
@@ -65,7 +85,7 @@ enum Role {
   REVIEWER
   APPROVER
   ADMIN
-  USER
+ 
 }
 
 enum Status {
@@ -75,10 +95,4 @@ enum Status {
   IN_REVIEW
   APPROVED
   REJECTED
-}
-
-enum Type {
-  ACCOUNT_CODE
-  BENEFICIARY_CODE
-  BUDGET_CODE
 }
