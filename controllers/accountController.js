@@ -6,22 +6,26 @@ const CODE_PATTERN = /^ACC-\d+$/;
 
 export const getAccountCodes = async (req, res) => {
   try {
-    let accountCodes = await prisma.account.findMany({
+    const accountCodes = await prisma.account.findMany({
       include: {
         vouchers: true,
       },
     });
-    res.status(200).json({
-      accountCodes,
+
+    return res.status(200).json({
+      message: "Account codes retrieved successfully",
+      data: accountCodes,
       results: accountCodes.length,
     });
+
   } catch (error) {
+    console.error('Error fetching account codes:', error);
+
     return res.status(500).json({
-      error: error.message,
+      error: "An error occurred while fetching account codes"
     });
   }
 };
-
 export const createAccountCode = async (req, res) => {
   try {
     const { name, code } = req.body;
