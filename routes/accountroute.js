@@ -1,10 +1,11 @@
 import express from 'express'
 const accountRoute =express.Router()
-import {getAccountCodes} from '../controllers/accountController.js';
+import {getAccountCodes,createAccountCode} from '../controllers/accountController.js';
 
 
 accountRoute
 .get('/',getAccountCodes)
+.post('/', createAccountCode)
 
 
 
