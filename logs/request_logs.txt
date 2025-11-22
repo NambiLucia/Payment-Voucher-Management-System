@@ -97,3 +97,8 @@
 ::ffff:127.0.0.1 - - [08/Nov/2025:17:48:41 +0000] "GET /api/v2/vouchers/search-status/pending HTTP/1.1" 200 14 "-" "Thunder Client (https://www.thunderclient.com)"
 ::ffff:127.0.0.1 - - [22/Nov/2025:11:35:10 +0000] "GET /api/v2/accounts/ HTTP/1.1" 200 31 "-" "Thunder Client (https://www.thunderclient.com)"
 ::ffff:127.0.0.1 - - [22/Nov/2025:15:13:53 +0000] "GET /api/v2/accounts/ HTTP/1.1" 200 72 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [22/Nov/2025:15:20:04 +0000] "POST /api/v2/accounts/ HTTP/1.1" 400 63 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [22/Nov/2025:15:21:03 +0000] "POST /api/v2/accounts/ HTTP/1.1" 201 212 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [22/Nov/2025:15:21:38 +0000] "PATCH /api/v2/accounts/ HTTP/1.1" 404 157 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [22/Nov/2025:15:21:46 +0000] "GET /api/v2/accounts/ HTTP/1.1" 200 239 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [22/Nov/2025:15:22:02 +0000] "PATCH /api/v2/accounts/8988d377-c357-4568-baa9-723ba49f27fc HTTP/1.1" 200 209 "-" "Thunder Client (https://www.thunderclient.com)"
