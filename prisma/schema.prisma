@@ -55,7 +55,7 @@ model Document {
 
 model Account {
   id        String    @id @default(uuid())
-  name      String
+  name      String    @unique
   code      String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -64,7 +64,7 @@ model Account {
 
 model Budget {
   id        String    @id @default(uuid())
-  name      String
+  name      String    @unique
   code      String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -73,7 +73,7 @@ model Budget {
 
 model Beneficiary {
   id        String    @id @default(uuid())
-  name      String
+  name      String    @unique
   code      String    @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
