@@ -10,7 +10,18 @@ export const getAccountCodes = async (req, res) => {
       include: {
         vouchers: true,
       },
+      orderBy:{
+        createdAt:'desc'
+      }
     });
+
+    if(accountCodes.length===0){
+      return res.status(200).json({
+        message:"No Account codes found",
+        data:[],
+        results:0
+,      })
+    }
 
     return res.status(200).json({
       message: "Account codes retrieved successfully",
