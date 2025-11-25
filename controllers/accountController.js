@@ -26,6 +26,8 @@ export const getAccountCodes = async (req, res) => {
     });
   }
 };
+
+//Create code
 export const createAccountCode = async (req, res) => {
   try {
     const { name, code } = req.body;
@@ -67,7 +69,7 @@ export const updateAccountCodeById = async (req, res) => {
     if (name) updateData.name = name.trim();
     if (code) updateData.code = code.toUpperCase();
 
-    // update
+    // Update code
     const updatedCode = await prisma.account.update({
       where: { id },
       data: updateData,
@@ -97,7 +99,7 @@ export const deleteAccountCodeById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    //delete
+    //Delete
     const deletedAccount = await prisma.account.delete({
       where: { id },
     });

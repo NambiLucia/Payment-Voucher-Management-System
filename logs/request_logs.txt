@@ -109,3 +109,8 @@
 ::ffff:127.0.0.1 - - [22/Nov/2025:17:04:47 +0000] "POST /api/v2/accounts/ HTTP/1.1" 400 225 "-" "Thunder Client (https://www.thunderclient.com)"
 ::ffff:127.0.0.1 - - [22/Nov/2025:17:07:02 +0000] "POST /api/v2/accounts/ HTTP/1.1" 400 1218 "-" "Thunder Client (https://www.thunderclient.com)"
 ::ffff:127.0.0.1 - - [22/Nov/2025:17:07:11 +0000] "POST /api/v2/accounts/ HTTP/1.1" 400 124 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [25/Nov/2025:06:21:15 +0000] "GET /api/v2/accounts/ HTTP/1.1" 200 240 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [25/Nov/2025:06:21:49 +0000] "PATCH /api/v2/accounts/ HTTP/1.1" 404 157 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [25/Nov/2025:06:22:01 +0000] "PATCH /api/v2/accounts/8988d377-c357-4568-baa9-723ba49f27fc HTTP/1.1" 400 124 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [25/Nov/2025:06:29:27 +0000] "PATCH /api/v2/accounts/8988d377-c357-4568-baa9-723ba49f27fc HTTP/1.1" 400 124 "-" "Thunder Client (https://www.thunderclient.com)"
+::ffff:127.0.0.1 - - [25/Nov/2025:06:30:23 +0000] "PATCH /api/v2/accounts/8988d377-c357-4568-baa9-723ba49f27fc HTTP/1.1" 200 220 "-" "Thunder Client (https://www.thunderclient.com)"

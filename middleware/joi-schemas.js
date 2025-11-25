@@ -15,3 +15,16 @@ code: Joi.string()
 
 
 })
+
+export const updateCodeSchema=Joi.object({
+name:Joi.string()
+        .min(3)
+        .max(50)
+        .trim(),
+code: Joi.string()
+        .min(3)
+        .max(100)
+        .pattern(/^(ACC|BUD|BEN)-\d+$/)
+        .uppercase()
+
+}).min(1);
