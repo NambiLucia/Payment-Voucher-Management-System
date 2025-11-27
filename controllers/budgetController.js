@@ -51,7 +51,7 @@ export const createBudgetCode = async (req, res) => {
     }
 
     // create directly - let database enforce uniqueness
-    const newAccount = await prisma.budget.create({
+    const newBudget = await prisma.budget.create({
       data: {
         name: name.trim(),
         code: code.toUpperCase(),
@@ -60,7 +60,7 @@ export const createBudgetCode = async (req, res) => {
 
     return res.status(201).json({
       message: "New Budget Code created successfully",
-      data: newAccount,
+      data: newBudget,
     });
   } catch (error) {
     if (error.code === "P2002") {
