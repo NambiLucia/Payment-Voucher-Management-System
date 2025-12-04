@@ -6,7 +6,7 @@ import { softDeleteFilter } from '../middleware/softDeleteFilter.js';
 
 voucherRoute
 .get('/',softDeleteFilter,getVouchers)
-.get('/user-vouchers/:id',getVouchersByUserId)
+.get('/users/:userId/vouchers',getVouchersByUserId)
 .get('/search-status/:status',getFilteredVouchers)
 
 

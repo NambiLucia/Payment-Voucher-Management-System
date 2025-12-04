@@ -33,6 +33,7 @@ model Voucher {
   amountWords   String
   createdAt     DateTime   @default(now())
   updatedAt     DateTime   @updatedAt
+  deletedAt       DateTime?
   status        Status     @default(DRAFT)
   userId        String
   Document      Document[]
