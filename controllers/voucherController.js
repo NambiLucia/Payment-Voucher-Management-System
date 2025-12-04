@@ -107,27 +107,30 @@ export const getVoucherByVoucherId = async(req,res)=>{
       
         const voucher= await prisma.voucher.findUnique({
             where:{
-           id:req.params.id
+           id:req.params.id,
+           deletedAt:null //exclude soft deleted vouchers
             }
           
         })
 
          if (!voucher) {
-      return res.status(404).json({ message: "Voucher not found" });
+      return res.status(404).json({ error: "Voucher not found" });
     }
 
 
-        res.status(200)
+       return res.status(200)
             .json({
-            voucher:voucher,
+            message: "Voucher retrieved successfully",
+      data: voucher,
             requestedAt: new Date().toISOString(),
             
         })
 
     }
     catch(error){
+      console.error("Error fetching vouchers", error)
         return res.status(500).json({
-           error: error.message
+           error: "An error occurred while fetching the voucher"
         })
 
     }
