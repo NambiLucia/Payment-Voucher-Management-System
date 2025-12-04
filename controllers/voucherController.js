@@ -48,30 +48,55 @@ export const getVouchers = async (req, res) => {
 // Get vouchers by UserID
 export const getVouchersByUserId = async (req, res) => {
   try {
+    const { id } = req.params;
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const skip = (page - 1) * limit;
 
-    const vouchers = await prisma.voucher.findMany({
-      where: {
-        ...req.userFilter, 
-        voucherId: req.params.id, // and filter by voucher ID
-      },
-      skip,
-      take: limit,
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    // Get vouchers and total count in parallel
+    const [vouchers, total] = await Promise.all([
+      prisma.voucher.findMany({
+        where: {
+          ...req.userFilter,
+          userId: id, // Changed from voucherId to userId
+        },
+        skip,
+        take: limit,
+        orderBy: {
+          createdAt: "desc",
+        },
+      }),
+      prisma.voucher.count({
+        where: {
+          ...req.userFilter,
+          userId: id,
+        },
+      }),
+    ]);
 
-    res.status(200).json({
-      results: vouchers.length,
-      vouchers,
-      requestedAt: new Date().toISOString(),
+    // Handle no vouchers found
+    if (vouchers.length === 0) {
+      return res.status(404).json({
+        message: "No vouchers found for this user",
+      });
+    }
+
+    return res.status(200).json({
+      message: "User vouchers retrieved successfully",
+      data: vouchers,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(total / limit),
+        totalResults: total,
+        resultsPerPage: limit,
+        resultsOnPage: vouchers.length,
+      },
     });
   } catch (error) {
+    console.error("Error fetching user vouchers:", error);
+
     return res.status(500).json({
-      error: error.message,
+      error: "An error occurred while fetching user vouchers",
     });
   }
 };
