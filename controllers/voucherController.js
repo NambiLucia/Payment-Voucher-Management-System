@@ -1,6 +1,8 @@
-import pkg from "@prisma/client";
+import pkg, { Status } from "@prisma/client";
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
+import { uploadMiddleware } from "../middleware/uploadMiddleware";
+const upload = uploadMiddleware("filesUploaded");
 
 // Get Vouchers
 export const getVouchers = async (req, res) => {
@@ -193,4 +195,81 @@ export const getFilteredVouchers = async (req, res) => {
   }
 };
 // create voucher
+export const createVoucher = async (req, res) => {
+  try {
+    const {
+      date,
+      voucherNo,
+      payee,
+      paymentDetails,
+      accountCode,
+      beneficiaryCode,
+      budgetCode,
+      exchangeRate,
+      amountFigures,
+      amountWords,
+    } = req.body;
 
+    const userId = req.user.id;
+
+    // Create the voucher
+    const newVoucher = await prisma.voucher.create({
+      data: {
+        date,
+        voucherNo: parseInt(voucherNo),
+        payee,
+        paymentDetails,
+
+        accountCode: {
+          connect: { code: accountCode },
+        },
+
+        beneficiaryCode: {
+          connect: { code: beneficiaryCode },
+        },
+
+        budgetCode: {
+          connect: { code: budgetCode },
+        },
+
+        exchangeRate: parseFloat(exchangeRate),
+        amountFigures,
+        amountWords,
+
+        user: {
+          connect: { id: userId },
+        },
+      },
+    });
+
+    // Save uploaded PDF documents (Cloudinary URLs)
+    if (req.files && req.files.length > 0) {
+      const documentsData = req.files.map((file) => ({
+        filename: file.originalname,
+        filetype: file.mimetype,
+        filepath: file.path, // Cloudinary secure URL
+        voucherId: newVoucher.id,
+      }));
+
+      await prisma.document.createMany({
+        data: documentsData,
+      });
+    }
+
+    // Return success response
+    return res.status(201).json({
+      message: "Voucher created successfully",
+      data: newVoucher,
+      documents: req.files?.map((file) => ({
+        name: file.originalname,
+        url: file.path,
+      })),
+    });
+
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      error:"Failed to create voucher",
+    });
+  }
+};
