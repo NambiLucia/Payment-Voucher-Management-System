@@ -50,6 +50,7 @@ model Document {
   filetype   String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  deletedAt       DateTime?
   voucherId  String
   voucher_id Voucher  @relation(fields: [voucherId], references: [id])
 }
