@@ -273,3 +273,75 @@ export const createVoucher = async (req, res) => {
     });
   }
 };
+
+// export const approveVoucher = async (req, res) => {
+//   const { id } = req.params;
+//   const user = req.user;
+
+//   if (user.role !== "ADMIN") {
+//     return res
+//       .status(403)
+//       .json({ message: "Access denied: Only admins can approve vouchers" });
+//   }
+
+//   try {
+//     const voucher = await prisma.voucher.findUnique({
+//       where: { id },
+//     });
+
+//     if (!voucher) {
+//       return res.status(404).json({ message: "Voucher not found" });
+//     }
+
+//     if (voucher.status === "APPROVED") {
+//       return res.status(400).json({ message: "Voucher is already approved" });
+//     }
+
+//     // Optional: allow approval only from specific states
+//     if (!["PENDING", "IN_REVIEW"].includes(voucher.status)) {
+//       return res.status(400).json({
+//         message: `Voucher cannot be approved from status ${voucher.status}`,
+//       });
+//     }
+
+//     const updatedVoucher = await prisma.voucher.update({
+//       where: { id },
+//       data: {
+//         status: "APPROVED",
+//       },
+//     });
+
+//     return res.status(200).json({
+//       message: "Voucher approved successfully",
+//       voucher: updatedVoucher,
+//     });
+//   } catch (error) {
+//     return res.status(500).json({
+//       message: "Error approving voucher",
+//       error: error.message,
+//     });
+//   }
+// };
+
+// export const updateVoucherById = async (req, res) => {
+//   try {
+//     const updatedVoucher = await prisma.voucher.update({
+//       where: {
+//         id: req.params.id,
+//       },
+//       data: req.body,
+//     });
+
+//     if (!updatedVoucher) {
+//       return res.status(404).json({ error: "Voucher not found" });
+//     }
+
+//     return res.status(200).json({
+//       message: "Voucher updated",
+//       updatedVoucher,
+//     });
+//   } catch (error) {
+//     return res.status(500).json({ error: error.message });
+//   }
+// };
+

@@ -10,6 +10,7 @@ import voucherRoute from './routes/voucherroute.js';
 import accountRoute from './routes/accountroute.js';
 import BudgetRoute from './routes/budgetroute.js';
 import BeneficiaryRoute from './routes/beneficiaryroute.js';
+import DocumentRoute from './routes/documentroute.js';
 
 
 
@@ -42,7 +43,7 @@ app.use('/api/v2/vouchers',voucherRoute)
 app.use('/api/v2/accounts',accountRoute)
 app.use('/api/v2/budgets',BudgetRoute)
 app.use('/api/v2/beneficiary',BeneficiaryRoute)
-
+app.use('/api/v2/document',DocumentRoute)
 
 
 
