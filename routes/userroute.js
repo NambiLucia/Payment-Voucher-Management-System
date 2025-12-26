@@ -1,8 +1,8 @@
 import express from 'express'
 const userRoute =express.Router()
 import {getUsers,login,register,updateUserById,deleteUserById} from '../controllers/userController.js'
-import { softDeleteFilter } from '../middleware/softDeleteFilter'
-import { validateToken } from '../middleware/validateToken'
+import { softDeleteFilter } from '../middleware/softDeleteFilter.js'
+import { validateToken } from '../middleware/validateToken.js'
 
 
 userRoute

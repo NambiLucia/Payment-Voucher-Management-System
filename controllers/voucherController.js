@@ -1,7 +1,7 @@
 import pkg, { Status } from "@prisma/client";
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
-import { uploadMiddleware } from "../middleware/uploadMiddleware";
+import { uploadMiddleware } from "../middleware/uploadMiddleware.js";
 const upload = uploadMiddleware("filesUploaded");
 
 // Get Vouchers
