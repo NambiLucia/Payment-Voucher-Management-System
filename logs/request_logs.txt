@@ -124,3 +124,7 @@
 ::ffff:127.0.0.1 - - [01/Dec/2025:17:16:47 +0000] "GET /api/v2/beneficiary/ HTTP/1.1" 200 62 "-" "Thunder Client (https://www.thunderclient.com)"
 ::ffff:127.0.0.1 - - [01/Dec/2025:17:17:50 +0000] "POST /api/v2/beneficiary/ HTTP/1.1" 201 229 "-" "Thunder Client (https://www.thunderclient.com)"
 ::ffff:127.0.0.1 - - [01/Dec/2025:17:18:28 +0000] "PATCH /api/v2/beneficiary/cad47d20-083d-4149-8114-37c194bb6119 HTTP/1.1" 200 225 "-" "Thunder Client (https://www.thunderclient.com)"
+::1 - - [26/Dec/2025:12:19:43 +0000] "GET /api/v2/users HTTP/1.1" 200 16 "-" "PostmanRuntime/7.47.1"
+::1 - - [28/Dec/2025:19:04:17 +0000] "GET / HTTP/1.1" 200 34 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+::1 - - [28/Dec/2025:19:04:17 +0000] "GET /favicon.ico HTTP/1.1" 404 150 "http://localhost:3500/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
+::1 - - [28/Dec/2025:19:05:57 +0000] "GET /api/v2/users HTTP/1.1" 200 16 "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
