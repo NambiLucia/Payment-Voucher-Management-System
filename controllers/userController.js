@@ -1,4 +1,4 @@
-import pkg, { Role } from "@prisma/client";
+import pkg from "@prisma/client";
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 import jwt from "jsonwebtoken";
@@ -102,6 +102,8 @@ export const login = async (req, res) => {
 //Update User
 export const updateUserById =async(req,res) =>{
  try {
+  
+
         if (!req.params.id) {
             return res.status(400).json({ error: "User ID is required" });
           }
@@ -117,9 +119,14 @@ export const updateUserById =async(req,res) =>{
       }
       return res.status(200).json({message:`User updated`,updatedUser});
     } catch (error) {
-      return res
-        .status(500)
-        .json({ error: error.message });
+      console.error('Update error:', error);
+    console.error('Error code:', error.code);
+    
+    if (error.code === 'P2025') {
+        return res.status(404).json({ error: "User not found with that ID" });
+    }
+    
+    return res.status(500).json({ error: error.message });
     }
 }
 
