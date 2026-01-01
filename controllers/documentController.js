@@ -2,6 +2,8 @@ import pkg from "@prisma/client";
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
+
+
 export const getDocument = async (req, res) => {
   try {
     const page = Math.max(1, parseInt(req.query.page) || 1); // Prevent page < 1

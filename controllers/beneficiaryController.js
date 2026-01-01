@@ -66,7 +66,7 @@ export const createBeneficiaryCode = async (req, res) => {
     if (error.code === "P2002") {
       return res
         .status(409)
-        .json({ error: "This Account code already exists" });
+        .json({ error: "This Beneficiary code already exists" });
     }
   }
 };

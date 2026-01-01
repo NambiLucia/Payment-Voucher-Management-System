@@ -42,8 +42,8 @@ app.use('/api/v2/users',userRoute)
 app.use('/api/v2/vouchers',voucherRoute)
 app.use('/api/v2/accounts',accountRoute)
 app.use('/api/v2/budgets',BudgetRoute)
-app.use('/api/v2/beneficiary',BeneficiaryRoute)
-app.use('/api/v2/document',DocumentRoute)
+app.use('/api/v2/beneficiaries',BeneficiaryRoute)
+app.use('/api/v2/documents',DocumentRoute)
 
 
 
