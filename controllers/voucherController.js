@@ -1,8 +1,8 @@
 import pkg, { Status } from "@prisma/client";
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
-import { uploadMiddleware } from "../middleware/uploadMiddleware.js";
-const upload = uploadMiddleware("filesUploaded");
+
+
 
 
 // Get Vouchers
@@ -214,30 +214,25 @@ export const createVoucher = async (req, res) => {
     const userId = req.user.id;
     const parsedDate = new Date(date);
 
-// ✅ Check all records in PARALLEL (much faster)
-    const [account, budget, beneficiary] = await Promise.all([
-      prisma.account.findUnique({ where: { code: accountCode } }),
-      prisma.budget.findUnique({ where: { code: budgetCode } }),
-      prisma.beneficiary.findUnique({ where: { code: beneficiaryCode } }),
-    ]);
+//  Check all records in PARALLEL (much faster)
+    // const [account, budget, beneficiary] = await Promise.all([
+    //   prisma.account.findUnique({ where: { code: accountCode } }),
+    //   prisma.budget.findUnique({ where: { code: budgetCode } }),
+    //   prisma.beneficiary.findUnique({ where: { code: beneficiaryCode } }),
+    // ]);
 
-    // Validate all at once
-    const errors = [];
-    if (!account) errors.push(`Account '${accountCode}' not found`);
-    if (!budget) errors.push(`Budget '${budgetCode}' not found`);
-    if (!beneficiary) errors.push(`Beneficiary '${beneficiaryCode}' not found`);
+    // // Validate all at once
+    // const errors = [];
+    // if (!account) errors.push(`Account '${accountCode}' not found`);
+    // if (!budget) errors.push(`Budget '${budgetCode}' not found`);
+    // if (!beneficiary) errors.push(`Beneficiary '${beneficiaryCode}' not found`);
 
-    if (errors.length > 0) {
-      return res.status(404).json({
-        error: "Related records not found",
-        details: errors,
-      });
-    }
-
-
-
-
-
+    // if (errors.length > 0) {
+    //   return res.status(404).json({
+    //     error: "Related records not found",
+    //     details: errors,
+    //   });
+    // }
 
 
     // Create the voucher
