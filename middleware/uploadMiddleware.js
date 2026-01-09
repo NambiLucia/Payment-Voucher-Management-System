@@ -1,6 +1,6 @@
 import multer from "multer";
 import { CloudinaryStorage } from "multer-storage-cloudinary"
-import {cloudinary} from "../cloudinaryConfig.js";
+import {cloudinary} from "../config/cloudinary.js";
 import path from "path";
 
 
@@ -16,6 +16,8 @@ export const uploadMiddleware=(folderName)=>{
         folder: folderPath,
         public_id: publicId,
         format: fileExtension,
+        resource_type: "raw", // ← Important for PDFs
+      chunk_size: 6000000, // ← Larger chunks = faster upload
       };
     },
   });

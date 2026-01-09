@@ -30,10 +30,10 @@ code: Joi.string()
 }).min(1);
 
 export const voucherSchema = Joi.object({
-    date:Joi.string().isoDate().required(),
+    date:Joi.string().required(),
     voucherNo:Joi.string().required(),
     payee:Joi.string().min(3).max(50).required(),        
-    paymentDetails:Joi.string().min(3).max(300).required(), 
+    voucherDetails:Joi.string().min(3).max(300).required(), 
     accountCode:Joi.string().min(3).max(50).required(),
     beneficiaryCode:Joi.string().min(3).max(50).required(),
     budgetCode:Joi.string().min(3).max(50).required(),
