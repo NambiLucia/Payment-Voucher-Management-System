@@ -1,4 +1,4 @@
-import pkg, { Status,Role } from "@prisma/client";
+import pkg, { Status } from "@prisma/client";
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
@@ -393,7 +393,9 @@ export const reviewVoucher = async (req, res) => {
   const user = req.user;
   
   try {
-    const voucher = await prisma.voucher.findUnique({ where: { id } });
+    const voucher = await prisma.voucher.findUnique(
+      { where: { id } }
+    );
     
     if (!voucher) {
       return res.status(404).json({ message: "Voucher not found" });
@@ -433,8 +435,159 @@ export const reviewVoucher = async (req, res) => {
   }
 };
 
+export const sendBackVoucher = async (req, res) => {
+  const { id } = req.params;
+  const { comment } = req.body;
+  const user = req.user;
+  
+  try {
+    const voucher = await prisma.voucher.findUnique({ where: { id } });
+    
+    if (!voucher) {
+      return res.status(404).json({ message: "Voucher not found" });
+    }
+    
+    // Check if voucher is in a valid status to send back
+    if (![Status.INITIATED, Status.IN_REVIEW].includes(voucher.status)) {
+      return res.status(400).json({ 
+        message: "Voucher must be in INITIATED or IN_REVIEW status",
+        currentStatus: voucher.status 
+      });
+    }
+    
+    // Prevent sending back own vouchers
+    if (voucher.createdById === user.id) {
+      return res.status(403).json({ 
+        message: "You cannot send back your own voucher" 
+      });
+    }
+    
+    const updated = await prisma.voucher.update({
+      where: { id },
+      data: {
+        status: Status.DRAFT,
+        reviewComment: comment,
+        reviewedById: user.id,
+        reviewedAt: new Date(),
+      },
+    });
+    
+    return res.status(200).json({ 
+      message: "Voucher sent back to initiator for revisions", 
+      data: updated 
+    });
+  } catch (error) {
+    console.error("Error sending voucher back:", error);
+    return res.status(500).json({ message: "Error sending voucher back" });
+  }
+};
+
+export const approveVoucher = async (req, res) => {
+  const { id } = req.params;
+  const user = req.user;
+  
+  try {
+    const voucher = await prisma.voucher.findUnique({ where: { id } });
+    
+    if (!voucher) {
+      return res.status(404).json({ message: "Voucher not found" });
+    }
+    
+    // Check if voucher is in the correct status for approval
+    if (voucher.status !== Status.IN_REVIEW) {
+      return res.status(400).json({ 
+        message: "Voucher must be in IN_REVIEW status for approval",
+        currentStatus: voucher.status 
+      });
+    }
+    
+    // Optional: Prevent approving own vouchers
+    if (voucher.createdById === user.id) {
+      return res.status(403).json({ 
+        message: "You cannot approve your own voucher" 
+      });
+    }
+    
+    // Optional: Prevent approving if you're also the reviewer
+    if (voucher.reviewedById === user.id) {
+      return res.status(403).json({ 
+        message: "You cannot approve a voucher you reviewed" 
+      });
+    }
+    
+    const updated = await prisma.voucher.update({
+      where: { id },
+      data: {
+        status: Status.APPROVED,
+        approvedById: user.id,
+        approvedAt: new Date(),
+      },
+    });
+    
+    return res.status(200).json({ 
+      message: "Voucher approved successfully", 
+      data: updated 
+    });
+  } catch (error) {
+    console.error("Error approving voucher:", error);
+    return res.status(500).json({ message: "Error approving voucher" });
+  }
+};
 
 
+export const rejectVoucher = async (req, res) => {
+  const { id } = req.params;
+  const { rejectionReason } = req.body; // Changed from 'reason' to match schema field name
+  const user = req.user;
+  
+  try {
+    const voucher = await prisma.voucher.findUnique({ where: { id } });
+    
+    if (!voucher) {
+      return res.status(404).json({ message: "Voucher not found" });
+    }
+    
+    // Check if voucher is in the correct status for rejection
+    if (voucher.status !== Status.IN_REVIEW) {
+      return res.status(400).json({ 
+        message: "Voucher must be in IN_REVIEW status for rejection",
+        currentStatus: voucher.status 
+      });
+    }
+    
+    // Optional: Prevent rejecting own vouchers
+    if (voucher.createdById === user.id) {
+      return res.status(403).json({ 
+        message: "You cannot reject your own voucher" 
+      });
+    }
+    
+    // Optional: Prevent rejecting if you're also the reviewer
+    if (voucher.reviewedById === user.id) {
+      return res.status(403).json({ 
+        message: "You cannot reject a voucher you reviewed" 
+      });
+    }
+    
+    const updated = await prisma.voucher.update({
+      where: { id },
+      data: {
+        status: Status.REJECTED,
+        rejectedById: user.id,
+        rejectedAt: new Date(),
+        rejectionReason,
+      },
+    });
+    
+    return res.status(200).json({ 
+      message: "Voucher rejected", 
+      data: updated 
+    });
+  } catch (error) {
+    console.error("Error rejecting voucher:", error);
+    return res.status(500).json({ message: "Error rejecting voucher" });
+  }
+};
 
 
 

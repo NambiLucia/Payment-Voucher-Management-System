@@ -65,3 +65,20 @@ export const userSchema = Joi.object({
         }),
 })
 
+export const sendBackSchema = Joi.object({
+  comment: Joi.string().min(10).max(500).required().messages({
+    'string.empty': 'Comment is required',
+    'string.min': 'Comment must be at least 10 characters',
+    'any.required': 'Comment is required'
+  }),
+});
+
+
+export const rejectVoucherSchema = Joi.object({
+  rejectionReason: Joi.string().min(10).max(500).required().messages({
+    'string.empty': 'Rejection reason is required',
+    'string.min': 'Rejection reason must be at least 10 characters',
+    'string.max': 'Rejection reason must not exceed 500 characters',
+    'any.required': 'Rejection reason is required'
+  }),
+});
