@@ -1,4 +1,4 @@
-import pkg, { Status } from "@prisma/client";
+import pkg, { Status,Role } from "@prisma/client";
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 
@@ -262,6 +262,7 @@ export const createVoucher = async (req, res) => {
         user_id: {
           connect: { id: userId },
         },
+        createdBy: userId
       },
     });
 
@@ -297,121 +298,298 @@ export const createVoucher = async (req, res) => {
   }
 };
 
-export const approveVoucher = async (req, res) => {
+export const updateVoucher = async (req, res) => {
   const { id } = req.params;
   const user = req.user;
-
-  if (user.role !== "ADMIN") {
-    return res.status(403).json({ 
-      message: "Access denied: Only admins can approve vouchers" 
-    });
-  }
-
+  
   try {
-    const voucher = await prisma.voucher.findUnique({
-      where: { id },
-    });
-
+    const voucher = await prisma.voucher.findUnique({ where: { id } });
+    
     if (!voucher) {
       return res.status(404).json({ message: "Voucher not found" });
+      
     }
-
-    if (voucher.status === Status.APPROVED) {
-      return res.status(400).json({ 
-        message: "Voucher is already approved" 
-      });
+  
+    // Check if user is the creator (only creators can edit their own drafts)
+    if (voucher.createdById !== user.id) {
+      return res.status(403).json({ message: "Not allowed" });
     }
-
-    // Only PENDING vouchers can be approved
-    if (voucher.status !== Status.PENDING) {
-      return res.status(400).json({
-        message: `Voucher cannot be approved from status: ${voucher.status}. Must be PENDING.`,
-      });
+    
+    // Only draft vouchers can be edited
+    if (voucher.status !== Status.DRAFT) {
+      return res.status(400).json({ message: "Only DRAFT vouchers can be edited" });
     }
-
-    const updatedVoucher = await prisma.voucher.update({
+    
+      // Create a copy and remove protected fields
+    const allowedFields = { ...req.body };
+    delete allowedFields.id;
+    delete allowedFields.voucherNo;
+    delete allowedFields.createdById;
+    delete allowedFields.createdBy;
+    delete allowedFields.createdAt;
+    delete allowedFields.status;
+    delete allowedFields.userId;
+    delete allowedFields.user_id;
+    delete allowedFields.updatedAt;
+    
+    const updated = await prisma.voucher.update({
       where: { id },
-      data: {
-        status: Status.APPROVED,
-        approvedBy: user.id,
-        approvedAt: new Date(),
-      },
+      data: allowedFields,
     });
-
-    return res.status(200).json({
-      message: "Voucher approved successfully",
-      voucher: updatedVoucher,
+    
+    return res.status(200).json(
+      {
+      message: "Voucher updated",
+      updated,
     });
   } catch (error) {
-    console.error("Error approving voucher:", error);
-    return res.status(500).json({
-      message: "Error approving voucher",
-      error: error.message,
-    });
+    console.error("Error updating voucher:", error);
+    res.status(500).json({ message: "Error updating voucher" });
   }
 };
 
-export const rejectVoucher = async (req, res) => {
+export const submitVoucher = async (req, res) => {
   const { id } = req.params;
-  const { reason } = req.body;
   const user = req.user;
-
-  if (user.role !== "ADMIN") {
-    return res.status(403).json({ 
-      message: "Access denied: Only admins can reject vouchers" 
-    });
-  }
-
+  
   try {
-    const voucher = await prisma.voucher.findUnique({
-      where: { id },
-    });
-
+    const voucher = await prisma.voucher.findUnique({ where: { id } });
+    
     if (!voucher) {
       return res.status(404).json({ message: "Voucher not found" });
     }
-
-    if (voucher.status === Status.REJECTED) {
+    
+    // Check ownership (middleware already verified role)
+    if (voucher.createdById !== user.id) {
+      return res.status(403).json({ 
+        message: "Not allowed. You can only submit your own vouchers." 
+      });
+    }
+    
+    // Only draft vouchers can be submitted
+    if (voucher.status !== Status.DRAFT) {
       return res.status(400).json({ 
-        message: "Voucher is already rejected" 
+        message: "Only DRAFT vouchers can be submitted" 
       });
     }
-
-    // Only PENDING vouchers can be rejected
-    if (voucher.status !== Status.PENDING) {
-      return res.status(400).json({
-        message: `Voucher cannot be rejected from status: ${voucher.status}. Must be PENDING.`,
-      });
-    }
-
-    if (!reason) {
-      return res.status(400).json({ 
-        message: "Rejection reason is required" 
-      });
-    }
-
-    const updatedVoucher = await prisma.voucher.update({
+    
+    const updated = await prisma.voucher.update({
       where: { id },
-      data: {
-        status: Status.REJECTED,
-        rejectedBy: user.id,
-        rejectedAt: new Date(),
-        rejectionReason: reason,
-      },
+      data: { status: Status.INITIATED },
     });
-
-    return res.status(200).json({
-      message: "Voucher rejected successfully",
-      voucher: updatedVoucher,
+    
+    return res.status(200).json({ 
+      message: "Voucher submitted successfully", 
+      data: updated 
     });
   } catch (error) {
-    console.error("Error rejecting voucher:", error);
-    return res.status(500).json({
-      message: "Error rejecting voucher",
-      error: error.message,
-    });
+    console.error("Error submitting voucher:", error);
+    return res.status(500).json({ message: "Error submitting voucher" });
   }
 };
+
+export const reviewVoucher = async (req, res) => {
+  const { id } = req.params;
+  const user = req.user;
+  
+  try {
+    const voucher = await prisma.voucher.findUnique({ where: { id } });
+    
+    if (!voucher) {
+      return res.status(404).json({ message: "Voucher not found" });
+    }
+    
+    // Check if voucher is in the correct status for review
+    if (voucher.status !== Status.INITIATED) {
+      return res.status(400).json({ 
+        message: "Voucher must be in INITIATED status to start review",
+        currentStatus: voucher.status 
+      });
+    }
+    
+    // Optional: Prevent reviewing own vouchers
+    if (voucher.createdById === user.id) {
+      return res.status(403).json({ 
+        message: "You cannot review your own voucher" 
+      });
+    }
+    
+    const updated = await prisma.voucher.update({
+      where: { id },
+      data: {
+        status: Status.IN_REVIEW,
+        reviewedById: user.id,
+        reviewedAt: new Date(),
+      },
+    });
+    
+    return res.status(200).json({ 
+      message: "Voucher review started successfully", 
+      data: updated 
+    });
+  } catch (error) {
+    console.error("Error reviewing voucher:", error);
+    return res.status(500).json({ message: "Error starting voucher review" });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// export const approveVoucher = async (req, res) => {
+//   const { id } = req.params;
+//   const user = req.user;
+
+//   if (user.role !== "ADMIN") {
+//     return res.status(403).json({ 
+//       message: "Access denied: Only admins can approve vouchers" 
+//     });
+//   }
+
+//   try {
+//     const voucher = await prisma.voucher.findUnique({
+//       where: { id },
+//     });
+
+//     if (!voucher) {
+//       return res.status(404).json({ message: "Voucher not found" });
+//     }
+
+//     if (voucher.status === Status.APPROVED) {
+//       return res.status(400).json({ 
+//         message: "Voucher is already approved" 
+//       });
+//     }
+
+//     // Only PENDING vouchers can be approved
+//     if (voucher.status !== Status.PENDING) {
+//       return res.status(400).json({
+//         message: `Voucher cannot be approved from status: ${voucher.status}. Must be PENDING.`,
+//       });
+//     }
+
+//     const updatedVoucher = await prisma.voucher.update({
+//       where: { id },
+//       data: {
+//         status: Status.APPROVED,
+//         approvedBy: user.id,
+//         approvedAt: new Date(),
+//       },
+//     });
+
+//     return res.status(200).json({
+//       message: "Voucher approved successfully",
+//       voucher: updatedVoucher,
+//     });
+//   } catch (error) {
+//     console.error("Error approving voucher:", error);
+//     return res.status(500).json({
+//       message: "Error approving voucher",
+//       error: error.message,
+//     });
+//   }
+// };
+
+// export const rejectVoucher = async (req, res) => {
+//   const { id } = req.params;
+//   const { reason } = req.body;
+//   const user = req.user;
+
+//   if (user.role !== "ADMIN") {
+//     return res.status(403).json({ 
+//       message: "Access denied: Only admins can reject vouchers" 
+//     });
+//   }
+
+//   try {
+//     const voucher = await prisma.voucher.findUnique({
+//       where: { id },
+//     });
+
+//     if (!voucher) {
+//       return res.status(404).json({ message: "Voucher not found" });
+//     }
+
+//     if (voucher.status === Status.REJECTED) {
+//       return res.status(400).json({ 
+//         message: "Voucher is already rejected" 
+//       });
+//     }
+
+//     // Only PENDING vouchers can be rejected
+//     if (voucher.status !== Status.PENDING) {
+//       return res.status(400).json({
+//         message: `Voucher cannot be rejected from status: ${voucher.status}. Must be PENDING.`,
+//       });
+//     }
+
+//     if (!reason) {
+//       return res.status(400).json({ 
+//         message: "Rejection reason is required" 
+//       });
+//     }
+
+//     const updatedVoucher = await prisma.voucher.update({
+//       where: { id },
+//       data: {
+//         status: Status.REJECTED,
+//         rejectedBy: user.id,
+//         rejectedAt: new Date(),
+//         rejectionReason: reason,
+//       },
+//     });
+
+//     return res.status(200).json({
+//       message: "Voucher rejected successfully",
+//       voucher: updatedVoucher,
+//     });
+//   } catch (error) {
+//     console.error("Error rejecting voucher:", error);
+//     return res.status(500).json({
+//       message: "Error rejecting voucher",
+//       error: error.message,
+//     });
+//   }
+// };
 
 
 

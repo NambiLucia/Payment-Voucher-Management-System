@@ -31,7 +31,6 @@ code: Joi.string()
 
 export const voucherSchema = Joi.object({
     date:Joi.string().required(),
-    voucherNo:Joi.string().required(),
     payee:Joi.string().min(3).max(50).required(),        
     voucherDetails:Joi.string().min(3).max(300).required(), 
     accountCode:Joi.string().min(3).max(50).required(),
