@@ -12,47 +12,63 @@ model User {
   username    String
   email       String    @unique
   is_approved Boolean   @default(false)
-  role        Role    @default(INITIATOR)
+  role        Role      @default(INITIATOR)
   createdAt   DateTime  @default(now())
   password    String
   deletedAt   DateTime?
-  Voucher     Voucher[]
+  // Relations
+  vouchersCreated Voucher[] @relation("VoucherCreatedBy")
+  vouchers        Voucher[] @relation("VoucherUser")
 }
 
 model Voucher {
   id              String      @id @default(uuid())
   date            DateTime    @default(now())
-  voucherNo       Int         @unique
+  voucherNo       Int         @unique @default(autoincrement())
   payee           String
   voucherDetails  String
   accountCode     Account     @relation(fields: [accountId], references: [id])
   budgetCode      Budget      @relation(fields: [budgetId], references: [id])
   beneficiaryCode Beneficiary @relation(fields: [beneficiaryId], references: [id])
-  exchangeRate  Int
-  amountFigures Int
-  amountWords   String
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  exchangeRate    Int
+  amountFigures   Int
+  amountWords     String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
   deletedAt       DateTime?
-  status        Status     @default(DRAFT)
-  userId        String
+  status          Status      @default(DRAFT)
+  // Ownership & workflow
+  createdById     String 
+  createdBy       User        @relation("VoucherCreatedBy", fields: [createdById], references: [id])
+  reviewedById    String?
+  reviewedAt      DateTime?
+  reviewComment   String?
+
+  approvedById    String?
+  approvedAt      DateTime?
+
+  rejectedById    String?
+  rejectedAt      DateTime?
+  rejectionReason String?
+
+  userId        String 
   Document      Document[]
-  user_id       User       @relation(fields: [userId], references: [id])
+  user_id       User       @relation("VoucherUser", fields: [userId], references: [id])
   accountId     String
   budgetId      String
   beneficiaryId String
 }
 
 model Document {
-  id         String   @id @default(uuid())
+  id         String    @id @default(uuid())
   filepath   String
   filename   String
   filetype   String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  deletedAt       DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
   voucherId  String
-  voucher_id Voucher  @relation(fields: [voucherId], references: [id])
+  voucher_id Voucher   @relation(fields: [voucherId], references: [id])
 }
 
 model Account {
@@ -87,13 +103,12 @@ enum Role {
   REVIEWER
   APPROVER
   ADMIN
- 
 }
 
 enum Status {
   DRAFT
   INITIATED
-  PENDING
+  // PENDING
   IN_REVIEW
   APPROVED
   REJECTED
