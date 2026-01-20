@@ -63,6 +63,14 @@ export const userSchema = Joi.object({
         .messages({
             'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
         }),
+
+role: Joi.string()
+    .valid( 'INITIATOR','REVIEWER','APPROVER','ADMIN')
+    .default('INITIATOR')
+    .messages({
+      'any.only': 'Role must be one of ADMIN, USER, or MANAGER',
+    }),
+
 })
 
 export const sendBackSchema = Joi.object({

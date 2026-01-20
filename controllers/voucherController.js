@@ -359,7 +359,7 @@ export const submitVoucher = async (req, res) => {
       return res.status(404).json({ message: "Voucher not found" });
     }
     
-    // Check ownership (middleware already verified role)
+    // Check ownership 
     if (voucher.createdById !== user.id) {
       return res.status(403).json({ 
         message: "Not allowed. You can only submit your own vouchers." 
@@ -409,7 +409,7 @@ export const reviewVoucher = async (req, res) => {
       });
     }
     
-    // Optional: Prevent reviewing own vouchers
+    //Prevent reviewing own vouchers
     if (voucher.createdById === user.id) {
       return res.status(403).json({ 
         message: "You cannot review your own voucher" 
@@ -537,7 +537,7 @@ export const approveVoucher = async (req, res) => {
 
 export const rejectVoucher = async (req, res) => {
   const { id } = req.params;
-  const { rejectionReason } = req.body; // Changed from 'reason' to match schema field name
+  const { rejectionReason } = req.body; 
   const user = req.user;
   
   try {

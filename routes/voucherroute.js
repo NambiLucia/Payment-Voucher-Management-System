@@ -1,4 +1,5 @@
 import express from 'express'
+import { Role } from "@prisma/client";
 const voucherRoute =express.Router()
 import { getVouchers,getVouchersByUserId,getVoucherByVoucherId,getFilteredVouchers,createVoucher,updateVoucher,submitVoucher,reviewVoucher,sendBackVoucher,approveVoucher,rejectVoucher } from '../controllers/voucherController.js';
 import { softDeleteFilter } from '../middleware/softDeleteFilter.js';
@@ -24,14 +25,14 @@ voucherRoute
 .get('/filtered',validateToken,getFilteredVouchers)
 .post('/',validateToken,uploadVoucherDocs.array("document", 10),normalizeDateFormat,
 schemaValidator(voucherSchema),createVoucher)
-.patch("/:id",validateToken,authorizeRole('INITIATOR','ADMIN'),updateVoucher)
-.patch("/vouchers/:id/submit", validateToken,authorizeRole('INITIATOR','ADMIN'),submitVoucher)
-.patch("/vouchers/:id/review",validateToken,authorizeRole('REVIEWER','ADMIN'), reviewVoucher)
-.patch("/vouchers/:id/send-back", validateToken,authorizeRole('REVIEWER','ADMIN'),schemaValidator(sendBackSchema),sendBackVoucher)
-.patch("/vouchers/:id/approve", validateToken, 
-    authorizeRole('APPROVER','ADMIN'), 
+.patch("/:id",validateToken,authorizeRole([Role.INITIATOR,Role.ADMIN]),updateVoucher)
+.patch("/:id/submit", validateToken,authorizeRole([Role.INITIATOR,Role.ADMIN]),submitVoucher)
+.patch("/:id/review",validateToken,authorizeRole([Role.REVIEWER,Role.ADMIN]), reviewVoucher)
+.patch("/:id/send-back", validateToken,authorizeRole([Role.REVIEWER,Role.ADMIN]),schemaValidator(sendBackSchema),sendBackVoucher)
+.patch("/:id/approve", validateToken, 
+    authorizeRole([Role.APPROVER,Role.ADMIN]), 
     approveVoucher)
-    .patch("/vouchers/:id/reject",validateToken,authorizeRole('APPROVER','ADMIN'),schemaValidator(rejectVoucherSchema), rejectVoucher)
+    .patch("/:id/reject",validateToken,authorizeRole([Role.APPROVER,Role.ADMIN]),schemaValidator(rejectVoucherSchema), rejectVoucher)
 
 
 export default voucherRoute;
