@@ -3,6 +3,7 @@ const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
 
 //Get Users
 export const getUsers = async (req, res) => {
@@ -100,6 +101,95 @@ export const login = async (req, res) => {
   }
 };
 
+// forgot password
+ export const forgotPassword = async (req, res) => {
+    try {
+      const { email } = req.body;
+  
+      // Validate email input
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+  
+      // Find the user by email
+      const user = await prisma.user.findUnique({
+        where: {
+          email: email,
+        },
+      });
+  
+      // If user doesn't exist, return an error
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+  
+      // Generate a JWT token for password reset
+      const resetToken = jwt.sign(
+        { id:user.id,email: user.email},
+        process.env.SECRET_KEY,
+        { expiresIn: "15m" }
+      );
+  
+      // Create reset password link
+      const resetLink = `${process.env.FRONTEND_URL.trim()}/reset-password?token=${resetToken}`;
+
+      console.log("Reset Link:", resetLink); 
+  
+      // Configure nodemailer transporter
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+        tls: {
+          rejectUnauthorized: false, 
+        },
+      });
+  
+      // email options
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email, // Send to the user's email
+        subject: "NOVA Payment Password Reset Request",
+        html: `
+<h2>Hello ${user.username}</h2>
+<p>Please click on the link below to reset your password:</p>
+<p><a href="${resetLink}">${resetLink}</a></p>
+<p><strong>Note:</strong> This reset link is valid for only 30 minutes.</p>
+<p>Regards,<br>The Nova system team</p>
+  `,
+};
+  
+      // Send the email
+      await transporter.sendMail(mailOptions);
+      console.log("Reset email sent to:", email); 
+  
+     
+      return res.status(200).json({ message: "Password reset link sent succcesfully to your email" });
+    } catch (error) {
+      console.error("Error in forgotPassword:", error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //Update User
 export const updateUserById =async(req,res) =>{
  try {
@@ -134,7 +224,7 @@ export const updateUserById =async(req,res) =>{
 //Delete User
 export const deleteUserById = async (req, res) => {
   try {
-    const isHardDelete = req.query.isHardDelete; // e.g. /users/uuid?isHardDelete=true
+    const isHardDelete = req.query.isHardDelete; //isHardDelete=true
     const userId = req.params.id;
 
     // Check if user is logged in
@@ -181,5 +271,4 @@ export const deleteUserById = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-
 
