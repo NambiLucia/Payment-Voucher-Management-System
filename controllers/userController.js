@@ -3,6 +3,7 @@ const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
 
 //Get Users
 export const getUsers = async (req, res) => {
@@ -30,7 +31,7 @@ export const getUsers = async (req, res) => {
 // Register User
 export const register = async (req, res) => {
   try {
-    const { username, email, password,role } = req.body;
+    const { username, email, password, role } = req.body;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -44,7 +45,7 @@ export const register = async (req, res) => {
         username,
         email,
         password: hashedPassword,
-        role
+        role,
       },
     });
 
@@ -78,7 +79,7 @@ export const login = async (req, res) => {
       {
         id: user.id,
         email: user.email,
-        role: user.role, 
+        role: user.role,
       },
       process.env.SECRET_KEY,
       { expiresIn: "1h" }
@@ -100,41 +101,159 @@ export const login = async (req, res) => {
   }
 };
 
+// forgot password
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: {
+        email: email.toLowerCase(),
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Generate a JWT token for password reset
+    const resetToken = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.SECRET_KEY,
+      { expiresIn: "15m" }
+    );
+
+    // Create reset password link
+    const resetLink = `${process.env.FRONTEND_URL.trim()}/reset-password?token=${resetToken}`;
+
+    console.log("Reset Link:", resetLink);
+
+    // Configure nodemailer transporter
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
+
+    // email options
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email, // Send to the user's email
+      subject: "NOVA Payment Password Reset Request",
+      html: `
+<h2>Hello ${user.username}</h2>
+<p>Please click on the link below to reset your password:</p>
+<p><a href="${resetLink}">${resetLink}</a></p>
+<p><strong>Note:</strong> This reset link is valid for only 30 minutes.</p>
+<p>Regards,<br>The Nova system team</p>
+  `,
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+    console.log("Reset email sent to:", email);
+
+    return res
+      .status(200)
+      .json({ message: "Password reset link sent succcesfully to your email" });
+  } catch (error) {
+    console.error("Error in forgotPassword:", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { resetToken, newPassword } = req.body;
+    
+    if (!resetToken) return res.status(400).json({ message: "Token is required" });
+    if (!newPassword || newPassword.length < 8)
+      return res.status(400).json({ message: "Password must be at least 8 characters" });
+
+    let decoded;
+    try {
+      decoded = jwt.verify(resetToken, process.env.SECRET_KEY);
+    } catch {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    const user = await prisma.user.findUnique({ where: { id: decoded.id } });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { 
+        password: hashedPassword,
+        // mustChangePassword: false, 
+      },
+    });
+
+    res.status(200).json({ message: "Password reset successfully" });
+  } catch (error) {
+    console.error("resetPassword error:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //Update User
-export const updateUserById =async(req,res) =>{
- try {
-  
-
-        if (!req.params.id) {
-            return res.status(400).json({ error: "User ID is required" });
-          }
-
-      const updatedUser = await prisma.user.update({
-        where: {
-          id: req.params.id,
-        },
-        data: req.body,
-      });
-      if (!updatedUser) {
-        return res.status(404).json({ error: "User not found"});
-      }
-      return res.status(200).json({message:`User updated`,updatedUser});
-    } catch (error) {
-      console.error('Update error:', error);
-    console.error('Error code:', error.code);
-    
-    if (error.code === 'P2025') {
-        return res.status(404).json({ error: "User not found with that ID" });
+export const updateUserById = async (req, res) => {
+  try {
+    if (!req.params.id) {
+      return res.status(400).json({ error: "User ID is required" });
     }
-    
+
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: req.params.id,
+      },
+      data: req.body,
+    });
+    if (!updatedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+    return res.status(200).json({ message: `User updated`, updatedUser });
+  } catch (error) {
+    console.error("Update error:", error);
+    console.error("Error code:", error.code);
+
+    if (error.code === "P2025") {
+      return res.status(404).json({ error: "User not found with that ID" });
+    }
+
     return res.status(500).json({ error: error.message });
-    }
-}
+  }
+};
 
 //Delete User
 export const deleteUserById = async (req, res) => {
   try {
-    const isHardDelete = req.query.isHardDelete; // e.g. /users/uuid?isHardDelete=true
+    const isHardDelete = req.query.isHardDelete; //isHardDelete=true
     const userId = req.params.id;
 
     // Check if user is logged in
@@ -147,12 +266,11 @@ export const deleteUserById = async (req, res) => {
       return res.status(403).json({ error: "Forbidden: Admins only" });
     }
 
-    
-    const user = await prisma.user.findUnique({ 
-      where: { id: userId } 
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
     });
 
-   if (!user) {
+    if (!user) {
       return res.status(404).json({ error: "User not found" });
     }
 
@@ -170,7 +288,7 @@ export const deleteUserById = async (req, res) => {
     const deletedUser = await prisma.user.update({
       where: { id: userId },
       data: { deletedAt: new Date() },
-      select: { id: true, email: true, deletedAt: true } 
+      select: { id: true, email: true, deletedAt: true },
     });
 
     return res.status(200).json({
@@ -181,5 +299,4 @@ export const deleteUserById = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 };
-
 
