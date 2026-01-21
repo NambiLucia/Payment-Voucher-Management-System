@@ -24,7 +24,7 @@ model User {
 model Voucher {
   id              String      @id @default(uuid())
   date            DateTime    @default(now())
-  voucherNo       Int         @unique @default(autoincrement())
+  voucherNo       String      @unique @default(uuid()) 
   payee           String
   voucherDetails  String
   accountCode     Account     @relation(fields: [accountId], references: [id])

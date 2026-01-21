@@ -143,7 +143,7 @@ export const getVoucherByVoucherId = async(req,res)=>{
 
 export const getFilteredVouchers = async (req, res) => {
   try {
-    const { status } = req.query;
+    const { status } = req.params;
     const page = parseInt(req.query.page) || 1;
     const limit = 10;
     const skip = (page - 1) * limit;
@@ -155,9 +155,9 @@ export const getFilteredVouchers = async (req, res) => {
       });
     }
 
-    //  filters - soft delete + status + logged-in user
+    //  filters  status + logged-in user
     const where = {
-      ...req.userFilter,
+      ...req.userFilter, //filters - soft delete
       status: status,
       userId: req.user.id
     };
@@ -200,7 +200,6 @@ export const createVoucher = async (req, res) => {
   try {
     const {
       date,
-      voucherNo,
       payee,
       voucherDetails ,
       accountCode,
@@ -239,7 +238,6 @@ export const createVoucher = async (req, res) => {
     const newVoucher = await prisma.voucher.create({
       data: {
         date: parsedDate,
-        voucherNo: parseInt(voucherNo),
         payee,
         voucherDetails ,
 
@@ -262,7 +260,13 @@ export const createVoucher = async (req, res) => {
         user_id: {
           connect: { id: userId },
         },
-        createdBy: userId
+        createdBy: {
+          connect:{
+            id:userId,
+            
+            
+          }
+        }
       },
     });
 
@@ -271,7 +275,7 @@ export const createVoucher = async (req, res) => {
       const documentsData = req.files.map((file) => ({
         filename: file.originalname,
         filetype: file.mimetype,
-        filepath: file.path, // Cloudinary secure URL
+        filepath: file.path, // Cloudinary URL
         voucherId: newVoucher.id,
       }));
 
@@ -562,7 +566,7 @@ export const rejectVoucher = async (req, res) => {
       });
     }
     
-    // Optional: Prevent rejecting if you're also the reviewer
+    //  Prevent rejecting if you're also the reviewer
     if (voucher.reviewedById === user.id) {
       return res.status(403).json({ 
         message: "You cannot reject a voucher you reviewed" 

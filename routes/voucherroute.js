@@ -22,7 +22,7 @@ voucherRoute
 .get('/',softDeleteFilter,getVouchers)
 .get('/by-user/:userId/vouchers',getVouchersByUserId)
 .get('/by-id/:id',getVoucherByVoucherId)
-.get('/filtered',validateToken,getFilteredVouchers)
+.get('/filter/:status',validateToken,getFilteredVouchers)
 .post('/',validateToken,uploadVoucherDocs.array("document", 10),normalizeDateFormat,
 schemaValidator(voucherSchema),createVoucher)
 .patch("/:id",validateToken,authorizeRole([Role.INITIATOR,Role.ADMIN]),updateVoucher)
