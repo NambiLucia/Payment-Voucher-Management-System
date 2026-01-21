@@ -361,3 +361,6 @@
 ::1 - - [21/Jan/2026:07:21:26 +0000] "GET /favicon.ico HTTP/1.1" 404 150 "http://localhost:3500/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
 ::1 - - [21/Jan/2026:07:21:58 +0000] "GET / HTTP/1.1" 304 - "-" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36"
 ::1 - - [21/Jan/2026:07:31:03 +0000] "POST /api/v2/vouchers HTTP/1.1" 201 986 "-" "PostmanRuntime/7.51.0"
+::1 - - [21/Jan/2026:10:06:50 +0000] "POST /api/v2/users/forgot-password HTTP/1.1" 200 65 "-" "PostmanRuntime/7.51.0"
+::1 - - [21/Jan/2026:10:09:46 +0000] "POST /api/v2/users/reset-password HTTP/1.1" 400 38 "-" "PostmanRuntime/7.51.0"
+::1 - - [21/Jan/2026:10:15:42 +0000] "POST /api/v2/users/reset-password HTTP/1.1" 200 41 "-" "PostmanRuntime/7.51.0"
