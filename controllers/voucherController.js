@@ -5,6 +5,7 @@ const prisma = new PrismaClient();
 
 
 
+
 // Get Vouchers
 export const getVouchers = async (req, res) => {
   try {
@@ -213,25 +214,7 @@ export const createVoucher = async (req, res) => {
     const userId = req.user.id;
     const parsedDate = new Date(date);
 
-//  Check all records in PARALLEL (much faster)
-    // const [account, budget, beneficiary] = await Promise.all([
-    //   prisma.account.findUnique({ where: { code: accountCode } }),
-    //   prisma.budget.findUnique({ where: { code: budgetCode } }),
-    //   prisma.beneficiary.findUnique({ where: { code: beneficiaryCode } }),
-    // ]);
 
-    // // Validate all at once
-    // const errors = [];
-    // if (!account) errors.push(`Account '${accountCode}' not found`);
-    // if (!budget) errors.push(`Budget '${budgetCode}' not found`);
-    // if (!beneficiary) errors.push(`Beneficiary '${beneficiaryCode}' not found`);
-
-    // if (errors.length > 0) {
-    //   return res.status(404).json({
-    //     error: "Related records not found",
-    //     details: errors,
-    //   });
-    // }
 
 
     // Create the voucher
@@ -594,8 +577,117 @@ export const rejectVoucher = async (req, res) => {
 };
 
 
+export const deleteVoucherById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Auth check
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const voucher = await prisma.voucher.findUnique({
+      where: { id },
+    });
+
+    if (!voucher) {
+      return res.status(404).json({ message: "Voucher not found" });
+    }
+
+    // Only DRAFT vouchers can be soft deleted
+    if (voucher.status !== Status.DRAFT) {
+      return res.status(400).json({
+        message: "Only draft vouchers can be soft deleted",
+      });
+    }
+
+    // Already soft deleted
+    if (voucher.deletedAt) {
+      return res.status(400).json({
+        message: "Voucher already soft deleted",
+      });
+    }
+
+    // Soft delete voucher
+    const deletedVoucher = await prisma.voucher.update({
+      where: { id },
+      data: {
+        deletedAt: new Date(),
+      },
+      select: {
+        id: true,
+        status: true,
+        deletedAt: true,
+      },
+    });
+
+    console.log(`Voucher ${id} soft deleted by user ${req.user.id}`);
+
+    return res.status(200).json({
+      message: "Voucher soft deleted successfully",
+      deletedVoucher,
+    });
+  } catch (error) {
+    console.error("Delete voucher error:", error);
+    return res.status(500).json({
+      message: "Failed to delete voucher",
+      error: error.message,
+    });
+  }
+};
 
 
+
+export const restoreVoucherById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+
+    const voucher = await prisma.voucher.findUnique({
+      where: { id },
+    });
+
+    if (!voucher) {
+      return res.status(404).json({ message: "Voucher not found" });
+    }
+
+    // Check if it's actually soft deleted
+    if (!voucher.deletedAt) {
+      return res.status(400).json({
+        message: "Voucher is not deleted or already restored",
+      });
+    }
+
+    // Restore voucher
+    const restoredVoucher = await prisma.voucher.update({
+      where: { id },
+      data: {
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        status: true,
+        deletedAt: true,
+      },
+    });
+
+    console.log(`Voucher ${id} restored by ${req.user.role} ${req.user.id}`);
+
+    return res.status(200).json({
+      message: "Voucher restored successfully",
+      restoredVoucher,
+    });
+  } catch (error) {
+    console.error("Restore voucher error:", error);
+    return res.status(500).json({
+      message: "Failed to restore voucher",
+      error: error.message,
+    });
+  }
+};
 
 
 

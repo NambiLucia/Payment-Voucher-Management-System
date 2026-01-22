@@ -39,7 +39,7 @@ export const register = async (req, res) => {
       return res.status(400).json({ message: "Email already in use" });
     }
 
-    // Generate temporary password
+    // temporary password
     const temporaryPassword = crypto.randomBytes(8).toString("hex");
     const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
 
@@ -56,7 +56,7 @@ export const register = async (req, res) => {
 
     return res.status(201).json({
       message: "User created successfully",
-      temporaryPassword: temporaryPassword, //remove this after
+      temporaryPassword: temporaryPassword, 
       user: {
         id: newUser.id,
         username: newUser.username,
