@@ -1,7 +1,7 @@
 import express from 'express'
 import { Role } from "@prisma/client";
 const voucherRoute =express.Router()
-import { getVouchers,getVouchersByUserId,getVoucherByVoucherId,getFilteredVouchers,createVoucher,updateVoucher,submitVoucher,reviewVoucher,sendBackVoucher,approveVoucher,rejectVoucher } from '../controllers/voucherController.js';
+import { getVouchers,getVouchersByUserId,getVoucherByVoucherId,getFilteredVouchers,createVoucher,updateVoucher,submitVoucher,reviewVoucher,sendBackVoucher,approveVoucher,rejectVoucher,deleteVoucherById,restoreVoucherById } from '../controllers/voucherController.js';
 import { softDeleteFilter } from '../middleware/softDeleteFilter.js';
 import { validateToken } from '../middleware/validateToken.js'
 import { schemaValidator } from '../middleware/schemaValidator.js';
@@ -33,6 +33,10 @@ schemaValidator(voucherSchema),createVoucher)
     authorizeRole([Role.APPROVER,Role.ADMIN]), 
     approveVoucher)
     .patch("/:id/reject",validateToken,authorizeRole([Role.APPROVER,Role.ADMIN]),schemaValidator(rejectVoucherSchema), rejectVoucher)
+.delete("/:id/delete",validateToken,authorizeRole([Role.INITIATOR,Role.ADMIN]),deleteVoucherById)
+.patch("/:id/restore",validateToken,authorizeRole([Role.ADMIN]),rejectVoucher)
+
+
 
 
 export default voucherRoute;

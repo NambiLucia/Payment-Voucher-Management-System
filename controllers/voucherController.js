@@ -665,6 +665,57 @@ export const deleteVoucherById = async (req, res) => {
 
 
 
+export const restoreVoucherById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+
+    const voucher = await prisma.voucher.findUnique({
+      where: { id },
+    });
+
+    if (!voucher) {
+      return res.status(404).json({ message: "Voucher not found" });
+    }
+
+    // Check if it's actually soft deleted
+    if (!voucher.deletedAt) {
+      return res.status(400).json({
+        message: "Voucher is not deleted or already restored",
+      });
+    }
+
+    // Restore voucher
+    const restoredVoucher = await prisma.voucher.update({
+      where: { id },
+      data: {
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        status: true,
+        deletedAt: true,
+      },
+    });
+
+    console.log(`Voucher ${id} restored by ${req.user.role} ${req.user.id}`);
+
+    return res.status(200).json({
+      message: "Voucher restored successfully",
+      restoredVoucher,
+    });
+  } catch (error) {
+    console.error("Restore voucher error:", error);
+    return res.status(500).json({
+      message: "Failed to restore voucher",
+      error: error.message,
+    });
+  }
+};
+
 
 
 
