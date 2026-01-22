@@ -1,7 +1,7 @@
 import pkg, { Status } from "@prisma/client";
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
-import { Role} from "@prisma/client";
+
 
 
 
@@ -580,17 +580,10 @@ export const rejectVoucher = async (req, res) => {
 export const deleteVoucherById = async (req, res) => {
   try {
     const { id } = req.params;
-    const isHardDelete = req.query.isHardDelete === "true";
 
+    // Auth check
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
-    }
-
-    //Only admins can hard delete
-    if (isHardDelete && req.user.role !== Role.ADMIN) {
-      return res.status(403).json({
-        message: "Forbidden: Admins only",
-      });
     }
 
     const voucher = await prisma.voucher.findUnique({
@@ -598,46 +591,24 @@ export const deleteVoucherById = async (req, res) => {
     });
 
     if (!voucher) {
-      return res.status(404).json({
-        message: "Voucher not found",
-      });
+      return res.status(404).json({ message: "Voucher not found" });
     }
 
-    // Prevent deleting non-draft vouchers (soft delete)
-    if (!isHardDelete && voucher.status !== Status.DRAFT) {
+    // Only DRAFT vouchers can be soft deleted
+    if (voucher.status !== Status.DRAFT) {
       return res.status(400).json({
-        message: "Only draft vouchers can be deleted",
+        message: "Only draft vouchers can be soft deleted",
       });
     }
 
     // Already soft deleted
-    if (voucher.deletedAt && !isHardDelete) {
+    if (voucher.deletedAt) {
       return res.status(400).json({
         message: "Voucher already soft deleted",
       });
     }
 
-    // Prevent hard deleting soft-deleted vouchers
-    if (isHardDelete && voucher.deletedAt) {
-      return res.status(400).json({
-        message: "Cannot hard delete a soft-deleted voucher. Restore it first.",
-      });
-    }
-
-    // Hard delete
-    if (isHardDelete) {
-      await prisma.voucher.delete({
-        where: { id },
-      });
-
-      console.log(`Voucher ${id} permanently deleted by admin ${req.user.id}`);
-
-      return res.status(200).json({
-        message: "Voucher permanently deleted",
-      });
-    }
-
-    // soft delete voucher
+    // Soft delete voucher
     const deletedVoucher = await prisma.voucher.update({
       where: { id },
       data: {
@@ -649,6 +620,8 @@ export const deleteVoucherById = async (req, res) => {
         deletedAt: true,
       },
     });
+
+    console.log(`Voucher ${id} soft deleted by user ${req.user.id}`);
 
     return res.status(200).json({
       message: "Voucher soft deleted successfully",
