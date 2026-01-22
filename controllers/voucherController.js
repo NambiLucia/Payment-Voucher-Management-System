@@ -1,6 +1,7 @@
 import pkg, { Status } from "@prisma/client";
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
+import { Role} from "@prisma/client";
 
 
 
@@ -213,25 +214,7 @@ export const createVoucher = async (req, res) => {
     const userId = req.user.id;
     const parsedDate = new Date(date);
 
-//  Check all records in PARALLEL (much faster)
-    // const [account, budget, beneficiary] = await Promise.all([
-    //   prisma.account.findUnique({ where: { code: accountCode } }),
-    //   prisma.budget.findUnique({ where: { code: budgetCode } }),
-    //   prisma.beneficiary.findUnique({ where: { code: beneficiaryCode } }),
-    // ]);
 
-    // // Validate all at once
-    // const errors = [];
-    // if (!account) errors.push(`Account '${accountCode}' not found`);
-    // if (!budget) errors.push(`Budget '${budgetCode}' not found`);
-    // if (!beneficiary) errors.push(`Beneficiary '${beneficiaryCode}' not found`);
-
-    // if (errors.length > 0) {
-    //   return res.status(404).json({
-    //     error: "Related records not found",
-    //     details: errors,
-    //   });
-    // }
 
 
     // Create the voucher
@@ -594,6 +577,91 @@ export const rejectVoucher = async (req, res) => {
 };
 
 
+export const deleteVoucherById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const isHardDelete = req.query.isHardDelete === "true";
+
+    if (!req.user) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    //Only admins can hard delete
+    if (isHardDelete && req.user.role !== Role.ADMIN) {
+      return res.status(403).json({
+        message: "Forbidden: Admins only",
+      });
+    }
+
+    const voucher = await prisma.voucher.findUnique({
+      where: { id },
+    });
+
+    if (!voucher) {
+      return res.status(404).json({
+        message: "Voucher not found",
+      });
+    }
+
+    // Prevent deleting non-draft vouchers (soft delete)
+    if (!isHardDelete && voucher.status !== Status.DRAFT) {
+      return res.status(400).json({
+        message: "Only draft vouchers can be deleted",
+      });
+    }
+
+    // Already soft deleted
+    if (voucher.deletedAt && !isHardDelete) {
+      return res.status(400).json({
+        message: "Voucher already soft deleted",
+      });
+    }
+
+    // Prevent hard deleting soft-deleted vouchers
+    if (isHardDelete && voucher.deletedAt) {
+      return res.status(400).json({
+        message: "Cannot hard delete a soft-deleted voucher. Restore it first.",
+      });
+    }
+
+    // Hard delete
+    if (isHardDelete) {
+      await prisma.voucher.delete({
+        where: { id },
+      });
+
+      console.log(`Voucher ${id} permanently deleted by admin ${req.user.id}`);
+
+      return res.status(200).json({
+        message: "Voucher permanently deleted",
+      });
+    }
+
+    // soft delete voucher
+    const deletedVoucher = await prisma.voucher.update({
+      where: { id },
+      data: {
+        deletedAt: new Date(),
+      },
+      select: {
+        id: true,
+        status: true,
+        deletedAt: true,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Voucher soft deleted successfully",
+      deletedVoucher,
+    });
+  } catch (error) {
+    console.error("Delete voucher error:", error);
+    return res.status(500).json({
+      message: "Failed to delete voucher",
+      error: error.message,
+    });
+  }
+};
 
 
 

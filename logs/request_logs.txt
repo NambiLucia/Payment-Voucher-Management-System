@@ -398,3 +398,4 @@
 ::1 - - [22/Jan/2026:09:14:33 +0000] "POST /api/v2/users/change-password HTTP/1.1" 500 37 "-" "PostmanRuntime/7.51.0"
 ::1 - - [22/Jan/2026:09:15:23 +0000] "POST /api/v2/users/change-password HTTP/1.1" 200 43 "-" "PostmanRuntime/7.51.0"
 ::1 - - [22/Jan/2026:09:16:14 +0000] "POST /api/v2/users/change-password HTTP/1.1" 401 34 "-" "PostmanRuntime/7.51.0"
+::1 - - [22/Jan/2026:09:28:38 +0000] "POST /api/v2/users/login HTTP/1.1" 200 297 "-" "PostmanRuntime/7.51.0"
