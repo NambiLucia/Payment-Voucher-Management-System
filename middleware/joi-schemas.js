@@ -55,14 +55,43 @@ export const userSchema = Joi.object({
         .max(100),
         // .required(),
     
-    password: Joi.string()
-        .min(8)
-        .max(100)
-        .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-        .required()
-        .messages({
-            'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
-        }),
+    // password: Joi.string()
+    //     .min(8)
+    //     .max(100)
+    //     .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    //     .required()
+    //     .messages({
+    //         'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+    //     }),
+
+role: Joi.string()
+    .valid( 'INITIATOR','REVIEWER','APPROVER','ADMIN')
+    .default('INITIATOR')
+    .messages({
+      'any.only': 'Role must be one of ADMIN, USER, or MANAGER',
+    }),
+
+})
+export const superAdminSchema = Joi.object({
+    username: Joi.string()
+        .min(3)
+        .max(50)
+        .alphanum(),
+        // .required(),
+    
+    email: Joi.string()
+        .email({ minDomainSegments: 2, tlds: { allow: true } })
+        .max(100),
+        // .required(),
+    
+    // password: Joi.string()
+    //     .min(8)
+    //     .max(100)
+    //     .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    //     .required()
+    //     .messages({
+    //         'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+    //     }),
 
 role: Joi.string()
     .valid( 'INITIATOR','REVIEWER','APPROVER','ADMIN')

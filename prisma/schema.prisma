@@ -13,6 +13,7 @@ model User {
   email       String    @unique
   is_approved Boolean   @default(false)
   role        Role      @default(INITIATOR)
+  changePassword  Boolean  @default(true)
   createdAt   DateTime  @default(now())
   password    String
   deletedAt   DateTime?

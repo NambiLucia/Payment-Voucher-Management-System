@@ -4,6 +4,7 @@ const prisma = new PrismaClient();
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
+import crypto from "crypto";
 
 //Get Users
 export const getUsers = async (req, res) => {
@@ -31,14 +32,16 @@ export const getUsers = async (req, res) => {
 // Register User
 export const register = async (req, res) => {
   try {
-    const { username, email, password, role } = req.body;
+    const { username, email, role } = req.body;
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ message: "Email already in use" });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Generate temporary password
+    const temporaryPassword = crypto.randomBytes(8).toString("hex");
+    const hashedPassword = await bcrypt.hash(temporaryPassword, 10);
 
     const newUser = await prisma.user.create({
       data: {
@@ -46,19 +49,83 @@ export const register = async (req, res) => {
         email,
         password: hashedPassword,
         role,
+        changePassword: true,
       },
     });
 
-    return res
-      .status(201)
-      .json({ message: "New User registered Successfully", newUser });
+
+    return res.status(201).json({
+      message: "User created successfully",
+      temporaryPassword: temporaryPassword, //remove this after
+      user: {
+        id: newUser.id,
+        username: newUser.username,
+        email: newUser.email,
+        role: newUser.role,
+      }
+    });
+
   } catch (error) {
-    console.error("Error creating users:", error);
-    return res
-      .status(500)
-      .json({ error: "Error occurred while registering new User" });
+    console.error("Error creating user:", error);
+    return res.status(500).json({ error: "Failed to create user" });
   }
 };
+
+//create super admin- this is for Nova team ONLY
+export const createSuperAdmin = async (req, res) => {
+  try {
+    const { username, email, role,password } = req.body;
+
+
+    if (role !== "ADMIN") {
+      return res.status(400).json({ 
+        message: "Only ADMIN role can be created via this endpoint" 
+      });
+    }
+
+    // Check if email already in use
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already in use" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newSuperAdmin = await prisma.user.create({
+      data: {
+        username,
+        email,
+        password: hashedPassword,
+        role,
+        changePassword: false,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        createdAt: true,
+      }
+    });
+
+    return res.status(201).json({ 
+      message: "Admin registered successfully", 
+      admin: newSuperAdmin 
+    });
+
+  } catch (error) {
+    console.error("Error creating admin:", error);
+    return res.status(500).json({ 
+      error: "Error occurred while registering admin" 
+    });
+  }
+};
+
+
+
+
+
+
 
 // Login User
 export const login = async (req, res) => {
@@ -73,6 +140,25 @@ export const login = async (req, res) => {
     const matchPassword = await bcrypt.compare(password, user.password);
     if (!matchPassword) {
       return res.status(401).json({ error: "Wrong Password" });
+    }
+
+//if must change password
+if (user.changePassword) {
+      const temporaryToken = jwt.sign(
+        {
+          id: user.id,
+          role: user.role,
+          changePassword: true,
+        },
+        process.env.SECRET_KEY,
+        { expiresIn: "15m" }
+      );
+
+      return res.status(200).json({
+        message: "Password change required",
+        changePassword: true,
+        token: temporaryToken,
+      });
     }
 
     const userToken = jwt.sign(
@@ -100,6 +186,45 @@ export const login = async (req, res) => {
     return res.status(500).json({ error: "Login failed" });
   }
 };
+
+export const changePassword = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { oldPassword, newPassword } = req.body;
+
+    const user = await prisma.user.findUnique({ 
+      where: { id: userId } 
+    });
+
+    const matchPassword= await bcrypt.compare(oldPassword, user.password);
+    if (!matchPassword) {
+      return res.status(401).json({ error: "Old password incorrect" });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        password: hashedPassword,
+        changePassword: false,
+      },
+    });
+
+    return res.status(200).json({
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    console.error("Change password error:", error);
+    return res.status(500).json({ error: "Failed to change password" });
+  }
+};
+
+
+
+
+
+
 
 // forgot password
 export const forgotPassword = async (req, res) => {
