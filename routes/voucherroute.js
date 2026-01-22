@@ -34,7 +34,7 @@ schemaValidator(voucherSchema),createVoucher)
     approveVoucher)
     .patch("/:id/reject",validateToken,authorizeRole([Role.APPROVER,Role.ADMIN]),schemaValidator(rejectVoucherSchema), rejectVoucher)
 .delete("/:id/delete",validateToken,authorizeRole([Role.INITIATOR,Role.ADMIN]),deleteVoucherById)
-.patch("/:id/restore",validateToken,authorizeRole([Role.ADMIN]),rejectVoucher)
+.patch("/:id/restore",validateToken,authorizeRole([Role.ADMIN]),restoreVoucherById)
 
 
 
