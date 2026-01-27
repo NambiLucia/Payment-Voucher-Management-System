@@ -6,8 +6,9 @@ export const schemaValidator = (schema, options = {}) => (req, res, next) => {
         return res.status(400).json({ error: error.details });
     }
 
-    // file validation only for creating vouchers
-    if (options.requireFile && !req.file) {
+    
+    // Check for req.files (array) 
+    if (options.requireFile && (!req.files || req.files.length === 0)) {
         return res.status(400).json({ error: "PDF file is required" });
     }
 
