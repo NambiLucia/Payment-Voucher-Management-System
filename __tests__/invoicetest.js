@@ -1,13 +1,14 @@
-import pkg from "@prisma/client";
-const { PrismaClient } = pkg;
-const prisma = new PrismaClient();
-import request from "supertest";
+// import pkg from "@prisma/client";
+// const { PrismaClient } = pkg;
+// const prisma = new PrismaClient();
+ import request from "supertest";
 import app from "../index.js";
-import { describe, test, expect, beforeAll,afterEach } from "@jest/globals";
+import { describe, test, expect, beforeAll} from "@jest/globals";
 import path from "path";
 import { fileURLToPath } from "url";
 
 import fs from "fs";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,8 +42,10 @@ describe("Voucher creation test", () => {
   });
 
   // delete test data- problem of foreign keys of documemts
-  
+
 //     afterEach(async () => {
+//     await prisma.document.deleteMany();
+//   await prisma.voucher.deleteMany();
 //     await prisma.voucher.deleteMany();
 //   });
 
@@ -116,6 +119,23 @@ test("Should create voucher successfully with PDF attached", async () => {
   },15000);
 
 
+//   test("Only DRAFT vouchers should be submitted", async () => {
+ 
+
+//   // Step 2: Submit the voucher with authentication
+//   const voucherId = "	e5a90bb1-5e36-49aa-b926-5726a4e6c64e";
+  
+//   const response = await request(app)
+//     .patch(`/api/v2/vouchers/${voucherId}/submit`)
+//     .set("Authorization", `Bearer ${authToken}`)
+//     .send();
+
+//      console.log("Submit Response Status:", response.status);
+//   console.log("Submit Response Body:", JSON.stringify(response.body, null, 2));
+
+//   expect(response.status).toBe(200);
+//   expect(response.body.status).toBe("INITIATED");
+// });
 
 
 
