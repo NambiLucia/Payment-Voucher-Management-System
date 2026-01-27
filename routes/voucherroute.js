@@ -24,7 +24,7 @@ voucherRoute
 .get('/by-id/:id',getVoucherByVoucherId)
 .get('/filter/:status',validateToken,getFilteredVouchers)
 .post('/',validateToken,uploadVoucherDocs.array("document", 10),normalizeDateFormat,
-schemaValidator(voucherSchema),createVoucher)
+ schemaValidator(voucherSchema, { requireFile: true }),createVoucher)
 .patch("/:id",validateToken,authorizeRole([Role.INITIATOR,Role.ADMIN]),updateVoucher)
 .patch("/:id/submit", validateToken,authorizeRole([Role.INITIATOR,Role.ADMIN]),submitVoucher)
 .patch("/:id/review",validateToken,authorizeRole([Role.REVIEWER,Role.ADMIN]), reviewVoucher)
