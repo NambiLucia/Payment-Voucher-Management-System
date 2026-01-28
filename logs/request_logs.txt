@@ -671,3 +671,8 @@
 ::ffff:127.0.0.1 - - [28/Jan/2026:07:14:11 +0000] "POST /api/v2/vouchers/ HTTP/1.1" 201 1002 "-" "-"
 ::ffff:127.0.0.1 - - [28/Jan/2026:07:14:12 +0000] "PATCH /api/v2/vouchers/37194d3f-0203-412d-ab92-51f80e1ef187/submit HTTP/1.1" 200 856 "-" "-"
 ::ffff:127.0.0.1 - - [28/Jan/2026:07:14:12 +0000] "PATCH /api/v2/vouchers/37194d3f-0203-412d-ab92-51f80e1ef187/submit HTTP/1.1" 400 50 "-" "-"
+::ffff:127.0.0.1 - - [28/Jan/2026:08:04:02 +0000] "POST /api/v2/users/login HTTP/1.1" 200 297 "-" "-"
+::ffff:127.0.0.1 - - [28/Jan/2026:08:04:02 +0000] "POST /api/v2/vouchers/ HTTP/1.1" 400 32 "-" "-"
+::ffff:127.0.0.1 - - [28/Jan/2026:08:04:12 +0000] "POST /api/v2/vouchers/ HTTP/1.1" 201 1002 "-" "-"
+::ffff:127.0.0.1 - - [28/Jan/2026:08:04:12 +0000] "PATCH /api/v2/vouchers/641f3bd6-6eee-4396-b4b5-37e570e6ac1b/submit HTTP/1.1" 200 856 "-" "-"
+::ffff:127.0.0.1 - - [28/Jan/2026:08:04:12 +0000] "PATCH /api/v2/vouchers/641f3bd6-6eee-4396-b4b5-37e570e6ac1b/submit HTTP/1.1" 400 50 "-" "-"
