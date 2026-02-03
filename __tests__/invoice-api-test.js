@@ -138,15 +138,8 @@ test("Should fail to submit voucher if not in DRAFT status", async () => {
   
   expect(response.status).toBe(400);
   expect(response.body.message).toBe("Only DRAFT vouchers can be submitted");
+
 });
-
-
-
-
-
-
-
-
 
 
 
