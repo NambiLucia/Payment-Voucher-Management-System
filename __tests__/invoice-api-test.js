@@ -1,7 +1,4 @@
-// import pkg from "@prisma/client";
-// const { PrismaClient } = pkg;
-// const prisma = new PrismaClient();
- import request from "supertest";
+import request from "supertest";
 import app from "../index.js";
 import { describe, test, expect, beforeAll} from "@jest/globals";
 import path from "path";
@@ -20,6 +17,7 @@ const __dirname = path.dirname(__filename);
 
 describe("Voucher creation test", () => {
   let authToken;
+    let voucherId;
 
   beforeAll(async () => {
     
@@ -41,13 +39,7 @@ describe("Voucher creation test", () => {
    
   });
 
-  // delete test data- problem of foreign keys of documemts
 
-//     afterEach(async () => {
-//     await prisma.document.deleteMany();
-//   await prisma.voucher.deleteMany();
-//     await prisma.voucher.deleteMany();
-//   });
 
   const voucher = {
     date: "2026-01-27",
@@ -62,6 +54,7 @@ describe("Voucher creation test", () => {
   };
 
   test("Should fail when PDF file isn't attached", async () => {
+
     const response = await request(app)
       .post("/api/v2/vouchers/")
       .set("Authorization", `Bearer ${authToken}`)
@@ -104,47 +97,49 @@ test("Should create voucher successfully with PDF attached", async () => {
       .attach("document", pdfPath);
 
   console.log("Response:", JSON.stringify(response.body, null, 2));
-
-  // ADD THESE DEBUG LOGS
+  
   console.log("Response status:", response.status);
   console.log("Response body:", JSON.stringify(response.body, null, 2));
   console.log("Response error:", response.error);
+   console.log("Response ID:",response.body.data.id);
 
 
-
-    // When successfully created
      expect(response.status).toBe(201);
     expect(response.body).toHaveProperty("data");
+
+    voucherId = response.body.data.id;
     
   },15000);
 
 
-//   test("Only DRAFT vouchers should be submitted", async () => {
+  test("Only DRAFT vouchers should be submitted", async () => {
  
+  const response = await request(app)
+    .patch(`/api/v2/vouchers/${voucherId}/submit`)
+    .set("Authorization", `Bearer ${authToken}`)
+    .send();
 
-//   // Step 2: Submit the voucher with authentication
-//   const voucherId = "	e5a90bb1-5e36-49aa-b926-5726a4e6c64e";
+  console.log("Submit Response Status:", response.status);
+  console.log("Submit Response Body:", JSON.stringify(response.body, null, 2));
+
+  expect(response.status).toBe(200);
+  expect(response.body.data.status).toBe("INITIATED");
+});
+
+test("Should fail to submit voucher if not in DRAFT status", async () => {
+  const response = await request(app)
+    .patch(`/api/v2/vouchers/${voucherId}/submit`)
+    .set("Authorization", `Bearer ${authToken}`)
+    .send();
+
+  console.log("Submit Non-DRAFT Response Status:", response.status);
+  console.log("Submit Non-DRAFT Response Body:", JSON.stringify(response.body, null, 2));
+
   
-//   const response = await request(app)
-//     .patch(`/api/v2/vouchers/${voucherId}/submit`)
-//     .set("Authorization", `Bearer ${authToken}`)
-//     .send();
+  expect(response.status).toBe(400);
+  expect(response.body.message).toBe("Only DRAFT vouchers can be submitted");
 
-//      console.log("Submit Response Status:", response.status);
-//   console.log("Submit Response Body:", JSON.stringify(response.body, null, 2));
-
-//   expect(response.status).toBe(200);
-//   expect(response.body.status).toBe("INITIATED");
-// });
-
-
-
-
-
-
-
-
-
+});
 
 
 
