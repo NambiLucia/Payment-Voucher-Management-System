@@ -20,6 +20,18 @@ describe("Voucher creation test", () => {
     let voucherId;
 
   beforeAll(async () => {
+
+// Create test user first
+  await request(app)
+    .post("/api/v2/users/register")
+    .send({
+      email: "ninah@email.com",
+      password: "Ninah256",
+      name: "Test User"
+    });
+
+
+
     
     const res = await request(app)
       .post("/api/v2/users/login")
