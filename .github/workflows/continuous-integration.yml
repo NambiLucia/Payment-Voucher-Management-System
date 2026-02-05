@@ -53,6 +53,9 @@ jobs:
       
       - name: Run Prisma migrations
         run: npx prisma migrate deploy
+
+      - name: Seed test user
+        run: node prisma/seed.js
       
       - name: Run tests
         run: npm test
