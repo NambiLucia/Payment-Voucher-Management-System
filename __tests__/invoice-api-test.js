@@ -1,3 +1,7 @@
+import pkg from "@prisma/client";
+const { PrismaClient } = pkg;
+const prisma = new PrismaClient();
+import bcrypt from "bcrypt";
 import request from "supertest";
 import app from "../index.js";
 import { describe, test, expect, beforeAll} from "@jest/globals";
@@ -20,6 +24,18 @@ describe("Voucher creation test", () => {
     let voucherId;
 
   beforeAll(async () => {
+
+const hashedPassword = await bcrypt.hash("Ninah256", 10);
+
+  await prisma.user.create({
+    data: {
+      username: "TestUser",
+      email: "ninah2@email.com",
+      password: hashedPassword,
+      role: "ADMIN"
+    }
+  });
+
 
 // Create test user first
   await request(app)
