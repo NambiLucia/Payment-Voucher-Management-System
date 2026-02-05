@@ -1,9 +1,60 @@
 name: Nova CI
+
 on:
   push:
-    branches:[main,develop]
+    branches: [main, develop]
   pull_request:
-    branches:[main]
+    branches: [main]
+
 jobs:
   test:
-  name:
+    name: Invoice API Test
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:14-alpine
+        env:
+          #credentials for CI 
+          POSTGRES_USER: ci_user
+          POSTGRES_PASSWORD: ci_test_password_12345
+          POSTGRES_DB: ci_test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    
+    env:
+      # CI-specific environment variables
+      DATABASE_URL: postgresql://ci_user:ci_test_password_12345@localhost:5432/ci_test_db
+      NODE_ENV: test
+      SECRET_KEY: test_jwt_secret_for_ci_only
+      # credentials for CI tests
+      CLOUD_NAME: test_cloud
+      CLOUDINARY_API_KEY: test_key
+      CLOUDINARY_API_SECRET: test_secret
+      EMAIL_USER: test@example.com
+      EMAIL_PASS: test_password
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Run Prisma migrations
+        run: npx prisma migrate deploy
+      
+      - name: Run tests
+        run: npm test
+
+
