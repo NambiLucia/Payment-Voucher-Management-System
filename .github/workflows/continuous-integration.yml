@@ -5,6 +5,9 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
+env:
+  DATABASE_URL: postgresql://postgres:admin%40256@localhost:5432/voucherdb
+
 
 jobs:
   test:
@@ -28,8 +31,8 @@ jobs:
           --health-retries 5
     
     env:
-      # CI-specific environment variables
-      DATABASE_URL: postgresql://postgres:admin%40256@localhost:5432/voucherdb
+      # # CI-specific environment variables
+      # DATABASE_URL: 
       # NODE_ENV: test
       # SECRET_KEY: test_jwt_secret_for_ci_only
       # credentials for CI tests
@@ -54,8 +57,8 @@ jobs:
       - name: Run Prisma migrations
         run: npx prisma migrate deploy
 
-      # - name: Seed test user
-      #   run: node prisma/seed.js
+      - name: Seed test user
+        run: node prisma/seed.js
       
       - name: Run tests
         run: npm test
