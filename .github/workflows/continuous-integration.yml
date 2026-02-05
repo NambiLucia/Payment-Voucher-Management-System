@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
 env:
-  DATABASE_URL: postgresql://postgres:admin%40256@localhost:5432/voucherdb
+  DATABASE_URL: postgresql://postgres:admin%40256@localhost:5432/voucherdb?schema=public
 
 
 jobs:
