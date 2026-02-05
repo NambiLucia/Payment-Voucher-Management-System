@@ -23,11 +23,12 @@ describe("Voucher creation test", () => {
 
 // Create test user first
   await request(app)
-    .post("/api/v2/users/register")
+    .post("/api/v2/users/create-admin")
     .send({
+      username: "TestUser",
       email: "ninah@email.com",
+      role: "ADMIN",
       password: "Ninah256",
-      name: "Test User"
     });
 
 
