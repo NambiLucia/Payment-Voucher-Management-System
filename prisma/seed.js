@@ -5,7 +5,7 @@ import bcrypt from "bcrypt";
 
 async function main() {
   // hash password
-  const hashedPassword = await bcrypt.hash("Test256", 10);
+  const hashedPassword = await bcrypt.hash("Ninah256", 10);
 
   // upsert ensures user exists, avoids unique constraint errors
   await prisma.user.upsert({
