@@ -15,9 +15,9 @@ jobs:
       postgres:
         image: postgres:14-alpine
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: admin@256
-          POSTGRES_DB: voucherdb
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
         ports:
           - 5432:5432
         options: >-
@@ -28,11 +28,11 @@ jobs:
 
     env:
       NODE_ENV: test
-      DATABASE_URL: postgresql://postgres:admin%40256@localhost:5432/voucherdb
-      SECRET_KEY: N8_N6(X3AoWt&n
-      CLOUD_NAME: dglmuv7yi
-      CLOUDINARY_API_KEY: 429354429656154
-      CLOUDINARY_API_SECRET: st_BsiJZKhh_Lpa8dTFfn2Xztg4
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      CLOUD_NAME: ${{ secrets.CLOUD_NAME }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY}}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
       EMAIL_USER: test@example.com
       EMAIL_PASS: test_password
 
