@@ -9,11 +9,14 @@ async function main() {
 
   // upsert ensures user exists, avoids unique constraint errors
   await prisma.user.upsert({
-    where: { email: "testuser@email.com" },
-    update: {},
+    where: { email: "ninah@email.com" },
+    update: {
+  password: hashedPassword
+},
+
     create: {
-      username: "TestUser",
-      email: "testuser@email.com",
+      username: "Ninah",
+      email: "ninah@email.com",
       password: hashedPassword,
       role: "ADMIN",
     },
