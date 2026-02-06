@@ -27,6 +27,33 @@ async function main() {
   console.log("CI test user ready");
 }
 
+await prisma.accountCode.upsert({
+  where: { code: "ACC-01" },
+  update: {},
+  create: {
+    code: "ACC-01",
+    name: "Test Account"
+  }
+});
+
+await prisma.beneficiaryCode.upsert({
+  where: { code: "BEN-001" },
+  update: {},
+  create: {
+    code: "BEN-001",
+    name: "Test Beneficiary"
+  }
+});
+
+await prisma.budgetCode.upsert({
+  where: { code: "BUD-001" },
+  update: {},
+  create: {
+    code: "BUD-001",
+    name: "Test Budget"
+  }
+});
+
 main()
   .catch((e) => {
     console.error(e);
