@@ -27,7 +27,7 @@ async function main() {
   console.log("CI test user ready");
 }
 
-await prisma.accountCode.upsert({
+await prisma.account.upsert({
   where: { code: "ACC-01" },
   update: {},
   create: {
@@ -36,7 +36,7 @@ await prisma.accountCode.upsert({
   }
 });
 
-await prisma.beneficiaryCode.upsert({
+await prisma.beneficiary.upsert({
   where: { code: "BEN-001" },
   update: {},
   create: {
@@ -45,7 +45,7 @@ await prisma.beneficiaryCode.upsert({
   }
 });
 
-await prisma.budgetCode.upsert({
+await prisma.budget.upsert({
   where: { code: "BUD-001" },
   update: {},
   create: {
