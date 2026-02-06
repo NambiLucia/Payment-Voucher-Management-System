@@ -29,7 +29,7 @@ jobs:
     env:
       NODE_ENV: test
       DATABASE_URL: postgresql://postgres:admin%40256@localhost:5432/voucherdb
-      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      SECRET_KEY: N8_N6(X3AoWt&n
       CLOUD_NAME: test_cloud
       CLOUDINARY_API_KEY: test_key
       CLOUDINARY_API_SECRET: test_secret
