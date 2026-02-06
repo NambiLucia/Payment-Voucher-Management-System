@@ -25,7 +25,6 @@ async function main() {
   });
 
   console.log("CI test user ready");
-}
 
 await prisma.account.upsert({
   where: { code: "ACC-01" },
@@ -53,6 +52,11 @@ await prisma.budget.upsert({
     name: "Test Budget"
   }
 });
+
+
+}
+
+
 
 main()
   .catch((e) => {
