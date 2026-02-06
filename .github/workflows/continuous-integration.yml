@@ -5,8 +5,6 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
-env:
-  DATABASE_URL: postgresql://postgres:admin%40256@localhost:5432/voucherdb
 
 
 jobs:
@@ -34,13 +32,14 @@ jobs:
       # # CI-specific environment variables
       # DATABASE_URL: 
       # NODE_ENV: test
-      # SECRET_KEY: test_jwt_secret_for_ci_only
-      # credentials for CI tests
-      CLOUD_NAME: test_cloud
-      CLOUDINARY_API_KEY: test_key
-      CLOUDINARY_API_SECRET: test_secret
-      EMAIL_USER: test@example.com
-      EMAIL_PASS: test_password
+       NODE_ENV: test
+  DATABASE_URL: postgresql://postgres:admin%40256@localhost:5432/voucherdb
+  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+  CLOUD_NAME: test_cloud
+  CLOUDINARY_API_KEY: test_key
+  CLOUDINARY_API_SECRET: test_secret
+  EMAIL_USER: test@example.com
+  EMAIL_PASS: test_password
     
     steps:
       - uses: actions/checkout@v4
