@@ -237,7 +237,7 @@ export const createVoucher = async (req, res) => {
         },
 
         exchangeRate: parseFloat(exchangeRate),
-        amountFigures,
+        amountFigures: parseFloat(amountFigures),
         amountWords,
 
         user_id: {
