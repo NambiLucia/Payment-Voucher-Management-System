@@ -6,6 +6,7 @@
   "scripts": {
     "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest",
     "test:coverage": "cross-env NODE_OPTIONS=--experimental-vm-modules jest --coverage",
+    "test:ci": "cross-env NODE_ENV=test DATABASE_URL='postgresql://testuser:ci_test_pass_123@localhost:5432/ci_testdb' NODE_OPTIONS=--experimental-vm-modules jest --runInBand",
     "start": "nodemon server.js"
   },
   "keywords": [],
