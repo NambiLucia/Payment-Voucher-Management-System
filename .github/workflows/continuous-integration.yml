@@ -30,9 +30,9 @@ jobs:
       NODE_ENV: test
       DATABASE_URL: postgresql://postgres:admin%40256@localhost:5432/voucherdb
       SECRET_KEY: N8_N6(X3AoWt&n
-      CLOUD_NAME: test_cloud
-      CLOUDINARY_API_KEY: test_key
-      CLOUDINARY_API_SECRET: test_secret
+      CLOUD_NAME: dglmuv7yi
+      CLOUDINARY_API_KEY: 429354429656154
+      CLOUDINARY_API_SECRET: st_BsiJZKhh_Lpa8dTFfn2Xztg4
       EMAIL_USER: test@example.com
       EMAIL_PASS: test_password
 
