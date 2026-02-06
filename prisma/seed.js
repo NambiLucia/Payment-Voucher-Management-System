@@ -12,7 +12,7 @@ async function main() {
     where: { email: "ninah@email.com" },
     update: {
   password: hashedPassword,
-  mustChangePassword: false
+  changePassword: false
 },
 
     create: {
@@ -20,7 +20,7 @@ async function main() {
       email: "ninah@email.com",
       password: hashedPassword,
       role: "ADMIN",
-      mustChangePassword: false
+      changePassword: false
     },
   });
 
