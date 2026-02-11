@@ -1,6 +1,23 @@
 version: "3.9"
 
 services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin@256
+      POSTGRES_DB: voucherdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
   app:
     build: .
     ports:
@@ -8,19 +25,16 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
-
-  db:
-    image: postgres:15
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: voucherdb
-    ports:
-      - "5432:5432"
+      db:
+        condition: service_healthy
+    restart: unless-stopped
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      # Mount source code for hot-reload with nodemon
+      - .:/usr/src/app
+      # Prevent node_modules from being overwritten
+      - /usr/src/app/node_modules
+      # Prevent prisma generated files from being overwritten
+      - /usr/src/app/node_modules/.prisma
 
 volumes:
   postgres_data:
