@@ -1,6 +1,6 @@
-FROM node:18-alpine
-# Install OpenSSL for prisma
-RUN apk add --no-cache openssl 
+FROM node:20-alpine
+# Install OpenSSL for prisma and build tools
+RUN apk add --no-cache bash python3 make g++ openssl
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
