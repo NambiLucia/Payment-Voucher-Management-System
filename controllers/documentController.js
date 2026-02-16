@@ -1,6 +1,9 @@
 import pkg from "@prisma/client";
 const { PrismaClient } = pkg;
 const prisma = new PrismaClient();
+import { cloudinary } from "../config/cloudinary.js";
+
+
 
 
 
@@ -65,7 +68,7 @@ export const deleteDocumentById = async (req, res) => {
     const isHardDelete = req.query.isHardDelete === "true";
 
     // Admin check for hard delete
-    if (isHardDelete && req.user.role !== "admin") {
+    if (isHardDelete && req.user.role !== "ADMIN") {
       return res.status(403).json({
         error: "Forbidden: Only admins can permanently delete documents",
       });
@@ -82,8 +85,8 @@ export const deleteDocumentById = async (req, res) => {
       });
     }
 
-    // Authorization check: User can only delete their own documents (unless admin)
-    if (req.user.role !== "admin" && document.userId !== req.user.id) {
+    //  User can only delete their own documents (unless admin)
+    if (req.user.role !== "ADMIN" && document.userId !== req.user.id) {
       return res.status(403).json({
         error: "Forbidden: You can only delete your own documents",
       });
@@ -96,7 +99,7 @@ export const deleteDocumentById = async (req, res) => {
       });
     }
 
-    // Hard delete (permanent removal)
+    // Hard delete
     if (isHardDelete) {
       // Delete from Cloudinary first
       if (document.cloudinaryPublicId) {
@@ -140,7 +143,7 @@ export const deleteDocumentById = async (req, res) => {
   } catch (error) {
     console.error("Delete document error:", error);
 
-    // Handle specific Prisma errors
+    // Prisma errors
     if (error.code === "P2025") {
       return res.status(404).json({
         error: "Document not found",

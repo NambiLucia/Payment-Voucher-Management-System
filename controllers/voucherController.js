@@ -488,14 +488,14 @@ export const approveVoucher = async (req, res) => {
       });
     }
     
-    // Optional: Prevent approving own vouchers
+    //  Prevent approving own vouchers
     if (voucher.createdById === user.id) {
       return res.status(403).json({ 
         message: "You cannot approve your own voucher" 
       });
     }
     
-    // Optional: Prevent approving if you're also the reviewer
+    //  Prevent approving if you're also the reviewer
     if (voucher.reviewedById === user.id) {
       return res.status(403).json({ 
         message: "You cannot approve a voucher you reviewed" 
@@ -542,7 +542,7 @@ export const rejectVoucher = async (req, res) => {
       });
     }
     
-    // Optional: Prevent rejecting own vouchers
+    //  Prevent rejecting own vouchers
     if (voucher.createdById === user.id) {
       return res.status(403).json({ 
         message: "You cannot reject your own voucher" 
@@ -631,7 +631,7 @@ export const deleteVoucherById = async (req, res) => {
     console.error("Delete voucher error:", error);
     return res.status(500).json({
       message: "Failed to delete voucher",
-      error: error.message,
+      
     });
   }
 };
