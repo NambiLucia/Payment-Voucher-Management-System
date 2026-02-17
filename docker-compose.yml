@@ -1,13 +1,11 @@
-version: "3.9"
-
 services:
   db:
     image: postgres:15-alpine
     restart: always
     environment:
-      POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-      POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-      POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin@256
+      POSTGRES_DB: voucherdb
     ports:
       - "5432:5432"
     volumes:

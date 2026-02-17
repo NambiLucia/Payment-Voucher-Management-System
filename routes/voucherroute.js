@@ -32,7 +32,7 @@ voucherRoute
 .patch("/:id/approve", validateToken, 
     authorizeRole([Role.APPROVER,Role.ADMIN]), 
     approveVoucher)
-    .patch("/:id/reject",validateToken,authorizeRole([Role.APPROVER,Role.ADMIN]),schemaValidator(rejectVoucherSchema), rejectVoucher)
+.patch("/:id/reject",validateToken,authorizeRole([Role.APPROVER,Role.ADMIN]),schemaValidator(rejectVoucherSchema), rejectVoucher)
 .delete("/:id/delete",validateToken,authorizeRole([Role.INITIATOR,Role.ADMIN]),deleteVoucherById)
 .patch("/:id/restore",validateToken,authorizeRole([Role.ADMIN]),restoreVoucherById)
 
