@@ -33,6 +33,7 @@ Nova Payment Voucher Management System is a secure and efficient backend solutio
 | Database              | PostgreSQL, Prisma ORM |
 | Authentication        | JWT, Bcrypt |
 | File Storage          | Cloudinary (via multer) |
+| Containerization | Docker |
 | Deployment            | Render |
 
 
