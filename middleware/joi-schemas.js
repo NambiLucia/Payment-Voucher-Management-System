@@ -52,14 +52,13 @@ export const userSchema = Joi.object({
     
     email: Joi.string()
         .email({ minDomainSegments: 2, tlds: { allow: true } })
-        .max(100)
-        .required(),
+        .max(100),
+        // .required(),
     
     password: Joi.string()
         .min(8)
         .max(100)
         .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-        .required()
         .messages({
             'string.pattern.base': 'Password must contain at least one uppercase letter, one lowercase letter, and one number'
         }),
