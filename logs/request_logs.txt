@@ -839,3 +839,6 @@
 ::ffff:172.18.0.1 - - [16/Feb/2026:13:14:29 +0000] "GET /api/v2/documents HTTP/1.1" 200 443 "-" "PostmanRuntime/7.51.1"
 ::ffff:172.18.0.1 - - [16/Feb/2026:13:15:27 +0000] "DELETE /api/v2/documents/c259b9fa-d520-4237-b109-eb04c6718ba0 HTTP/1.1" 403 49 "-" "PostmanRuntime/7.51.1"
 ::ffff:172.18.0.1 - - [16/Feb/2026:13:16:32 +0000] "GET /api/v2/users HTTP/1.1" 200 294 "-" "PostmanRuntime/7.51.1"
+::1 - - [21/Feb/2026:14:34:20 +0000] "POST /api/v2/users/register HTTP/1.1" 201 196 "-" "PostmanRuntime/7.51.1"
+::1 - - [21/Feb/2026:16:47:30 +0000] "POST /users/change-password HTTP/1.1" 404 161 "-" "PostmanRuntime/7.51.1"
+::1 - - [21/Feb/2026:16:48:10 +0000] "POST /api/v2/users/change-password HTTP/1.1" 403 49 "-" "PostmanRuntime/7.51.1"
